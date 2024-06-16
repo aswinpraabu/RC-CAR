@@ -1,4 +1,10 @@
 from typing import NamedTuple
+from enum import Enum
+
+class fault_level(Enum):
+    NO_ERROR = 0
+    WARNING = 1
+    ERROR = 2
 
 
 class voltages_struct(NamedTuple):
@@ -18,17 +24,26 @@ class diagnostic_thresholds_struct(NamedTuple):
     ecu_supply_UV_OV_warn_thresholds : tuple[float, float] # ECU Supply UV warning threshold, OV warning threshold
     ecu_supply_UV_OV_error_thresholds : tuple[float, float] # ECU Supply UV error threshold, OV error threshold
 
+# probably will move this to a common library and use it in other places
+class dtc_description(NamedTuple):
+    Name : str
+    Description : str
+    DTC_code : int
+    threshold : float
+    maturation_time : float
+    dematuration_time : float
+    fault_cat : int
+    
+
 class diagnostic_results_struct(NamedTuple):
     # True = fault is present
     # False = fault is not present
     # UV = Under Voltage
     # OV = Over Voltage
-    pack_UV_OV_warn : tuple[bool, bool]  = (False,False) # Pack UV warning, OV warning
-    pack_UV_OV_error : tuple[bool, bool]  = (False,False) # Pack Undervoltage error, Overvoltage error
-    dc_charge_UV_OV_warn : tuple[float, float]  = (False,False) # DC Charging UV warning threshold, OV warning threshold
-    dc_charge_UV_OV_error : tuple[float, float]  = (False,False) # DC Charging UV error threshold, OV error threshold
-    ecu_supply_UV_OV_warn : tuple[float, float]  = (False,False) # ECU Supply UV warning threshold, OV warning threshold
-    ecu_supply_UV_OV_error : tuple[float, float]  = (False,False) # ECU Supply UV error threshold, OV error threshold
+    pack_UV_OV : tuple[fault_level, fault_level]  = (fault_level.NO_ERROR,fault_level.NO_ERROR) # Pack Voltage faults
+    dc_charge_UV_OV : tuple[fault_level, fault_level]  = (fault_level.NO_ERROR,fault_level.NO_ERROR) # DC Charging Voltage faults
+    ecu_supply_UV_OV : tuple[fault_level, fault_level]  = (fault_level.NO_ERROR,fault_level.NO_ERROR) # ECU Supply Voltage faults
+
 
 class voltage_mod:
     _diagnostic_thresholds:diagnostic_thresholds_struct
@@ -49,9 +64,11 @@ class voltage_mod:
         )
         diagnostic_thresholds = thresholds
     def main(self):
+        self.diagnostics()
         pass
 
     def diagnostics(self):
+        pack_OV = 0 # 1 = warning, 2 = error
         pass
 
 
