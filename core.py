@@ -1,9 +1,9 @@
-import sensor_module
-import voltage_module
-import temperature_module
-import current_module
-import relay_module
-import actuator_module
+from sensor_module import sensor_module
+from voltage_module import voltage_module
+from temperature_module import temperature_module
+from current_module import current_module
+from relay_module import relay_module
+from actuator_module import actuator_module
 import time
 
 
@@ -17,12 +17,12 @@ counts_50ms = 0.050 / program_step_time
 
 
 
-
+v = voltage_module.voltage_mod()
 
 
 if __name__ == '__main__':
 	#TODO Initialize the module objects
-
+	voltage_mod = voltage_module.voltage_mod()
 	#TODO load calibrations from file
 
 	# Use to 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 	
 	#count the number of iterations
 	program_counter = 0
-	init = time.time()
+	init_time = time.time()
 	while run_program:
 
 		if(program_counter % counts_10ms == 0):
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 		#TODO remove this
 		if(program_counter >= 300/program_step_time):
 			run_program = False
-		#print(time.time() - init)
+		#print(time.time() - init_time)
 		time.sleep(program_step_time) # sleep for 10 ms
 
 	# clean up
