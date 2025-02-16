@@ -2,7 +2,7 @@
 name: HW Feature Req
 about: Create a work item for a feature
 title: "[HW Feature]"
-labels: Core
+labels: HW Feature
 assignees: aswinpraabu
 
 ---
