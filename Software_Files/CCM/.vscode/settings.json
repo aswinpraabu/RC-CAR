@@ -9,11 +9,13 @@
     "python.analysis.typeshedPaths": [
         "CCM_Submodules",
         "~/.micropico-stubs/included",
-        "~/MicroPython_RFM69-master"
+        "~/MicroPython_RFM69-master",
+        "~/.micropico-stubs/included/stdlib"
     ],
     "python.analysis.extraPaths": [
         "CCM_Submodules",
         "~/.micropico-stubs/included",
-        "~/MicroPython_RFM69-master"
+        "~/MicroPython_RFM69-master",
+        "~/.micropico-stubs/included/stdlib"
     ]
 }
