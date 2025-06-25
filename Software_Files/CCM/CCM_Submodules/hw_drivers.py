@@ -1,4 +1,4 @@
-from global_data import hw_drivers_data
+from CCM_Submodules.global_data import hw_drivers_data
 from machine import SPI, Pin
 
 # region RFM69
@@ -12,6 +12,7 @@ RFM69_RESET_PIN = 20
 # endregion
 
 def initialize():
+    print("Initializing hardware drivers...")
     hw_drivers_data.rfm69_SPI = SPI(
                                     0,
                                     baudrate=500_000,
