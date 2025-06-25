@@ -1,9 +1,10 @@
+from machine import SPI, Pin
 
 class hw_drivers_data_class:
     
-    rfm69_SPI = None
-    rfm69_CS = None
-    rfm69_RESET = None
+    rfm69_SPI:SPI = None #type: ignore
+    rfm69_CS:Pin = None #type: ignore
+    rfm69_RESET:Pin = None #type: ignore
 
 
     def get_rfm69_info(self):
