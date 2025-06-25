@@ -1,5 +1,5 @@
 from CCM_Submodules.global_data import hw_drivers_data
-from machine import SPI, Pin
+from machine import SPI, Pin,PWM
 
 # region RFM69
 # Define pin numbers for RFM69 module
@@ -8,8 +8,46 @@ RFM69_MISO_PIN = 16
 RFM69_SCK_PIN = 18
 RFM69_CS_PIN = 17
 RFM69_RESET_PIN = 20
+a = PWM(Pin(RFM69_MOSI_PIN), freq=1000000)  # Example PWM initialization, adjust as needed
+a.duty_ns()
 
 # endregion
+SERVO_PIN = 21
+
+class Servo:
+    def __init__(self, pin):
+
+        # Initialize the parameters for the SG90 servo motor
+        self.pin = Pin(pin, Pin.OUT)
+        self.angle = 0  # Initialize angle to 0 degrees
+        self.min_angle = -90.0  # Minimum angle
+        self.max_angle = 90.0 # Maximum angle
+        self.min_duty_ns = 1.0e6 # (1ms) Minimum duty cycle in nanoseconds
+        self.max_duty_ns = 2.0e6 # (2ms)Maximum duty cycle in nanoseconds
+        self.freq = 50
+        self.pwm = PWM(self.pin, freq=self.freq)
+
+
+    def set_angle(self, angle):
+        if 0 <= angle <= 180:
+            self.angle = angle
+            
+            duty_ns = self._angle_to_duty_ns(angle)
+            self.pwm.duty_ns(duty_ns)
+
+    def _angle_to_duty_ns(self, angle: float) -> int:
+        '''
+        Convert angle to duty cycle in ns
+        '''
+        duty_ns:int = 0
+        if angle < self.min_angle or angle > self.max_angle:
+            print(f"Angle must be between {self.min_angle} and {self.max_angle} degrees")
+            duty_ns = int(( self.max_duty_ns + self.min_duty_ns)/2)
+        else:    
+            factor = (self.max_duty_ns - self.min_duty_ns)/(self.max_angle - self.min_angle)
+            duty_ns = int((angle - self.min_angle) * factor + self.min_duty_ns)
+        return duty_ns
+
 
 def initialize():
     print("Initializing hardware drivers...")
