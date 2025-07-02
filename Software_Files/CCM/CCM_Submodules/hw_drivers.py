@@ -65,6 +65,7 @@ def initialize():
     hw_drivers_data.rfm69_CS = Pin(RFM69_CS_PIN, Pin.OUT)
     hw_drivers_data.rfm69_RESET = Pin(RFM69_RESET_PIN, Pin.OUT)
 
+    hw_drivers_data.servo_pin = Servo(SERVO_PIN)
 
 def task_005ms():
     pass
