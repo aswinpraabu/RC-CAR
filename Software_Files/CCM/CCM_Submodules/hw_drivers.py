@@ -29,11 +29,17 @@ class Servo:
         self.min_duty_ns = 1.0e6 # (1ms) Minimum duty cycle in nanoseconds
         self.max_duty_ns = 2.0e6 # (2ms)Maximum duty cycle in nanoseconds
         self.freq = 50
+
+        self.min_duty_offset_ms = -0.5344 # Offset for minimum duty cycle
+        self.max_duty_offset_ms = 0.57 # Offset for maximum duty cycle
+        self.min_duty_ns += int(self.min_duty_offset_ms * 1e6)  # Convert ms to ns
+        self.max_duty_ns += int(self.max_duty_offset_ms * 1e6)  # Convert ms to ns
+        
         self.pwm = PWM(self.pin, freq=self.freq)
 
 
     def set_angle(self, angle):
-        if 0 <= angle <= 180:
+        if self.min_angle <= angle <= self.max_angle:
             self.angle = angle
             
             duty_ns = self._angle_to_duty_ns(angle)
