@@ -36,7 +36,7 @@ def rf_receive():
         rf_comms_data.rx_validity = decode_result
         
         #packet_text = str(packet, "ascii")
-        print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}, diff: {3}".format(turn_angle, throttle, decode_result,ticks_diff(ticks_ms(), t1)))
+        #print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}, diff: {3}".format(turn_angle, throttle, decode_result,ticks_diff(ticks_ms(), t1)))
     
     else:
         #print("Received nothing! Listening again...")

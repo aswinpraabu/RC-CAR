@@ -1,4 +1,4 @@
-from CCM_Submodules.global_data import hw_drivers_data
+from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data
 from machine import SPI, Pin,PWM
 
 # region RFM69
@@ -14,8 +14,12 @@ a.duty_ns()
 # endregion
 SERVO_PIN = 21
 
+
 class Servo:
-    def __init__(self, pin):
+    def __init__(self):
+        pass
+
+    def configure_pin(self, pin):
 
         # Initialize the parameters for the SG90 servo motor
         self.pin = Pin(pin, Pin.OUT)
@@ -46,8 +50,10 @@ class Servo:
         else:    
             factor = (self.max_duty_ns - self.min_duty_ns)/(self.max_angle - self.min_angle)
             duty_ns = int((angle - self.min_angle) * factor + self.min_duty_ns)
+        #print(f"Setting servo angle to {angle} degrees, duty_ns: {duty_ns}")
         return duty_ns
 
+steering_servo = Servo()
 
 def initialize():
     print("Initializing hardware drivers...")
@@ -65,8 +71,17 @@ def initialize():
     hw_drivers_data.rfm69_CS = Pin(RFM69_CS_PIN, Pin.OUT)
     hw_drivers_data.rfm69_RESET = Pin(RFM69_RESET_PIN, Pin.OUT)
 
-    hw_drivers_data.servo_pin = Servo(SERVO_PIN)
+    steering_servo.configure_pin(SERVO_PIN)
 
 def task_005ms():
+    '''
+    This function is called every 5ms to update the servo position based on the received data.
+    '''
+    # Get the received data
+    _, turn_angle, decode_result = rf_comms_data.get_rx_data()
+
+    # If the packet is valid, set the servo angle
+    if decode_result:
+        steering_servo.set_angle(turn_angle)
     pass
 

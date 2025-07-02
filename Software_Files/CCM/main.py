@@ -1,4 +1,4 @@
-from CCM_Submodules import global_data
+from CCM_Submodules import global_data,actuators
 from CCM_Submodules import hw_drivers
 from CCM_Submodules import rf_comms
 
@@ -16,6 +16,7 @@ def initialize():
 def task_005ms():
 	#print("Running Main 5ms task...")
 	rf_comms.task_005ms()
+	hw_drivers.task_005ms()
 
 
 def task_010ms():
