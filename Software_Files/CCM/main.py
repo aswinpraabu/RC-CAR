@@ -20,6 +20,7 @@ def task_005ms():
 
 
 def task_010ms():
+	rf_comms.task_010ms()
 	pass
 
 def task_100ms():
