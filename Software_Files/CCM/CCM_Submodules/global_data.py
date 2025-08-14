@@ -19,7 +19,8 @@ class rf_comms_data_class:
     rx_turn_angle = 0
     rx_validity = False
 
-    def get_rx_data(self):
+    LOC_with_RCM = False #Flag to indicate if CCM has lost communication with RCM
+
     def get_rx_PropulsionCtrl_data(self):
         '''
         Returns the received throttle and turn angle data.\n
