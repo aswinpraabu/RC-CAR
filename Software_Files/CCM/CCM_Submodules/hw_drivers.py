@@ -84,7 +84,7 @@ def task_005ms():
     This function is called every 5ms to update the servo position based on the received data.
     '''
     # Get the received data
-    _, turn_angle, decode_result = rf_comms_data.get_rx_data()
+    _, turn_angle, decode_result = rf_comms_data.get_rx_PropulsionCtrl_data()
 
     # If the packet is valid, set the servo angle
     if decode_result:
