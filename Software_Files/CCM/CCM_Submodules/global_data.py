@@ -20,6 +20,7 @@ class rf_comms_data_class:
     rx_validity = False
 
     def get_rx_data(self):
+    def get_rx_PropulsionCtrl_data(self):
         '''
         Returns the received throttle and turn angle data.\n
         -> (throttle, turn_angle, decode_result)
