@@ -1,4 +1,4 @@
-from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data
+from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
 from machine import SPI, Pin,PWM
 
 # region RFM69
@@ -13,6 +13,11 @@ a.duty_ns()
 
 # endregion
 SERVO_PIN = 21
+
+MOTOR_FWD_PIN = 22
+MOTOR_REV_PIN = 23
+
+
 
 
 class Servo:
@@ -39,6 +44,7 @@ class Servo:
 
 
     def set_angle(self, angle):
+        #TODO [RC-81]: remove redundant angle check
         if self.min_angle <= angle <= self.max_angle:
             self.angle = angle
             
@@ -59,6 +65,47 @@ class Servo:
         #print(f"Setting servo angle to {angle} degrees, duty_ns: {duty_ns}")
         return duty_ns
 
+class DC_Motor:
+    def __init__(self):
+        pass
+    def configure_pin(self, forward_pin_num, reverse_pin_num):
+        # Initialize the parameters for the DC motor
+        self.forward_pin = Pin(forward_pin_num, Pin.OUT)
+        self.reverse_pin = Pin(reverse_pin_num, Pin.OUT)
+
+        self.frequency = 1000  # Frequency for PWM
+        self.forward_pwm = PWM(self.forward_pin, freq=self.frequency)
+        self.reverse_pwm = PWM(self.reverse_pin, freq=self.frequency)
+        self.forward_pwm.duty_ns(0)  # Initialize duty cycle to 0
+        self.reverse_pwm.duty_ns(0)  # Initialize duty cycle to 0
+
+        self.power = 0 #Positive power for forward, negative for reverse
+        self.min_power = -50  # Minimum power
+        self.max_power = 100  # Maximum power
+    def set_power(self, power):
+        # Set the power of the motor
+        duty_ns = self._power_to_duty_ns(power)
+
+        if power > 0:
+            self.forward_pwm.duty_ns(duty_ns)
+            self.reverse_pwm.duty_ns(0)
+        elif power < 0:
+            self.forward_pwm.duty_ns(0)
+            self.reverse_pwm.duty_ns(duty_ns)
+        
+        
+    def _power_to_duty_ns(self, power: float) -> int:
+        '''
+        Convert power to duty cycle in ns. Period is 1/freqency = 1/1000 = 1ms = 1000000ns
+        '''
+        duty_ns:int = 0
+        is_in_range = self.min_power <= power <= self.max_power
+        if not is_in_range:
+            print(f"power must be between {self.min_power} and {self.max_power}")
+            duty_ns = 0
+        else:    
+            duty_ns = int((abs(power) * 1000)) # percent to ns
+        return duty_ns
 steering_servo = Servo()
 
 def initialize():
@@ -83,6 +130,8 @@ def task_005ms():
     '''
     This function is called every 5ms to update the servo position based on the received data.
     '''
+    motor_control()
+
     # Get the received data
     _, turn_angle, decode_result = rf_comms_data.get_rx_PropulsionCtrl_data()
 
