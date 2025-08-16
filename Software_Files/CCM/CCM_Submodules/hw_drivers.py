@@ -94,7 +94,7 @@ class DC_Motor:
             self.reverse_pwm.duty_ns(0)
         elif power < 0:
             self.forward_pwm.duty_ns(0)
-            self.reverse_pwm.duty_ns(int(duty_ns*0.5)) # # Reverse motor at half power
+            self.reverse_pwm.duty_ns(int(duty_ns*0.5)) # Reverse motor at half power
         
         
     def _power_to_duty_ns(self, power: float) -> int:
