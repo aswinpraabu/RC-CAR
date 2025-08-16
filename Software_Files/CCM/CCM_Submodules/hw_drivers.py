@@ -13,12 +13,15 @@ a.duty_ns()
 
 # endregion
 SERVO_PIN = 21
+LED2_LOC_RCM_PIN = 25
 
 MOTOR_FWD_PIN = 22
 MOTOR_REV_PIN = 23
 
 
 
+LED2 = Pin(LED2_LOC_RCM_PIN, Pin.OUT)
+LED2.value(0)  # Turn off LED initially
 
 class Servo:
     def __init__(self):
@@ -126,17 +129,25 @@ def initialize():
 
     steering_servo.configure_pin(SERVO_PIN)
 
+def led_control():
+    LED2.value(controls_data.led2_loc_rcm)
+
+def motor_control():
+
+    #controls_data.car_throttle
+    steering_servo.set_angle(controls_data.car_turn_angle)
+
+
+def hw_drivers_diagnostics():
+    #TODO: Add diagnostics for battery voltage, current sensors, etc.
+    pass
+
+
 def task_005ms():
     '''
     This function is called every 5ms to update the servo position based on the received data.
     '''
     motor_control()
 
-    # Get the received data
-    _, turn_angle, decode_result = rf_comms_data.get_rx_PropulsionCtrl_data()
-
-    # If the packet is valid, set the servo angle
-    if decode_result:
-        steering_servo.set_angle(turn_angle)
-    pass
-
+def task_100ms():
+    led_control()
