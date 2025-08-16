@@ -28,6 +28,14 @@ class rf_comms_data_class:
         '''
         return self.rx_throttle, self.rx_turn_angle, self.rx_validity
     
+class controls_data_class:
+    car_throttle = 0
+    car_turn_angle = 0
+
+    led1_bat_low = False  # LED1 indicates battery is low
+    led2_loc_rcm = False  # LED2 indicates CCM has lost communication with RCM
+    
 # Initialize global data instances    
 hw_drivers_data = hw_drivers_data_class()
 rf_comms_data = rf_comms_data_class()
+controls_data = controls_data_class()
