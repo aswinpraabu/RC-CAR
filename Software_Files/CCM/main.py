@@ -1,6 +1,7 @@
 from CCM_Submodules import global_data,actuators
 from CCM_Submodules import hw_drivers
 from CCM_Submodules import rf_comms
+from CCM_Submodules import controls
 
 from time import sleep_ms, ticks_ms, ticks_diff
 
@@ -16,15 +17,18 @@ def initialize():
 def task_005ms():
 	#print("Running Main 5ms task...")
 	rf_comms.task_005ms()
+	controls.task_005ms()
 	hw_drivers.task_005ms()
 
 
 def task_010ms():
 	rf_comms.task_010ms()
-	pass
+	controls.task_010ms()
+	
 
 def task_100ms():
-	pass
+	controls.task_100ms()
+	hw_drivers.task_100ms()
 
 
 if __name__ == "__main__":

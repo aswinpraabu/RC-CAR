@@ -128,14 +128,14 @@ def decode_msg_0x0A_PropulsionCtrl(raw_data):
     Decodes a received packet into its components.
     Raw Data format: [TURN_ANGLE_RAW, THROTTLE_RAW]\n
     turn_angle = TURN_ANGLE_RAW - 90\n
-    throttle = THROTTLE_RAW\n
+    throttle = THROTTLE_RAW - 100\n
     **Returns**:
     -   turn_angle (int): degrees
     -   throttle (int): percentage
     -   decode_result (bool): True if packet is valid, False otherwise
     '''
     turn_angle = int(raw_data[0]) - 90
-    throttle = int(raw_data[1])
+    throttle = int(raw_data[1]) - 100
     decode_result = True
 
     print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}".format(turn_angle, throttle, decode_result))
