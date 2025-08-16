@@ -47,12 +47,11 @@ class Servo:
 
 
     def set_angle(self, angle):
-        #TODO [RC-81]: remove redundant angle check
-        if self.min_angle <= angle <= self.max_angle:
-            self.angle = angle
-            
-            duty_ns = self._angle_to_duty_ns(angle)
-            self.pwm.duty_ns(duty_ns)
+        #TODO [RC-81] remove redundant angle check
+        self.angle = angle
+        
+        duty_ns = self._angle_to_duty_ns(angle)
+        self.pwm.duty_ns(duty_ns)
 
     def _angle_to_duty_ns(self, angle: float) -> int:
         '''
