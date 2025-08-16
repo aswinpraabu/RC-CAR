@@ -83,7 +83,7 @@ class DC_Motor:
         self.reverse_pwm.duty_ns(0)  # Initialize duty cycle to 0
 
         self.power = 0 #Positive power for forward, negative for reverse
-        self.min_power = -50  # Minimum power
+        self.min_power = -100  # Minimum power
         self.max_power = 100  # Maximum power
     def set_power(self, power):
         # Set the power of the motor
@@ -94,7 +94,7 @@ class DC_Motor:
             self.reverse_pwm.duty_ns(0)
         elif power < 0:
             self.forward_pwm.duty_ns(0)
-            self.reverse_pwm.duty_ns(duty_ns)
+            self.reverse_pwm.duty_ns(int(duty_ns*0.5)) # # Reverse motor at half power
         
         
     def _power_to_duty_ns(self, power: float) -> int:
