@@ -109,7 +109,10 @@ class DC_Motor:
         else:    
             duty_ns = int((abs(power) * 1000)) # percent to ns
         return duty_ns
+    
+
 steering_servo = Servo()
+propulsion_motor = DC_Motor()
 
 def initialize():
     print("Initializing hardware drivers...")
@@ -128,14 +131,15 @@ def initialize():
     hw_drivers_data.rfm69_RESET = Pin(RFM69_RESET_PIN, Pin.OUT)
 
     steering_servo.configure_pin(SERVO_PIN)
+    propulsion_motor.configure_pin(MOTOR_FWD_PIN, MOTOR_REV_PIN)
 
 def led_control():
     LED2.value(controls_data.led2_loc_rcm)
 
 def motor_control():
 
-    #controls_data.car_throttle
     steering_servo.set_angle(controls_data.car_turn_angle)
+    propulsion_motor.set_power(controls_data.car_throttle)
 
 
 def hw_drivers_diagnostics():
