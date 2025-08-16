@@ -143,7 +143,8 @@ def motor_control():
 
 
 def hw_drivers_diagnostics():
-    #TODO: Add diagnostics for battery voltage, current sensors, etc.
+    #TODO [RC-78,RC-77]: Add diagnostics for battery voltage
+    #TODO:Add diagnostics for current sensors
     pass
 
 
