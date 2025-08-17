@@ -1,10 +1,8 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
+from CCM_Submodules.global_data import POWER_MODES
 from time import ticks_ms, ticks_diff
 
-class POWER_MODES:
-    Normal = 0
-    Prepare_Shutdown = 1
-    Shutdown = 2
+
 
 Prepare_Shutdown_start_time = 0  # Time when Prepare_Shutdown mode started
 Prepare_Shutdown_duration_ms = 5000  # Duration to stay in Prepare_Shutdown mode

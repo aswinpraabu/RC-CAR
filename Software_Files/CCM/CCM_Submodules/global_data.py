@@ -1,5 +1,9 @@
 from machine import SPI, Pin
-from controls import POWER_MODES
+
+class POWER_MODES:
+    Normal = 0
+    Prepare_Shutdown = 1
+    Shutdown = 2
 
 class hw_drivers_data_class:
     
