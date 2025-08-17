@@ -36,4 +36,4 @@ def task_010ms():
 def task_100ms():
     # Update warning lights based on communication status
     warning_lights_control()
-    
+    #print("Turn angle: {0}, Throttle: {1}, Power Mode: {2}".format(controls_data.car_turn_angle,controls_data.car_throttle, controls_data.power_mode))
