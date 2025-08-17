@@ -1,4 +1,5 @@
 from machine import SPI, Pin
+from controls import POWER_MODES
 
 class hw_drivers_data_class:
     
@@ -36,6 +37,8 @@ class controls_data_class:
 
     led1_bat_low = False  # LED1 indicates battery is low
     led2_loc_rcm = False  # LED2 indicates CCM has lost communication with RCM
+
+    power_mode = POWER_MODES.Normal
     
 # Initialize global data instances    
 hw_drivers_data = hw_drivers_data_class()
