@@ -152,8 +152,8 @@ def decode_msg_0x0A_PropulsionCtrl(raw_data):
     shutdown_flag = decode_Shutdown(raw_data[2])  # Decode shutdown command
     decode_result = True
 
-    if shutdown_flag:
-        pass #print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}, shutdown: {3}".format(turn_angle, throttle, decode_result, shutdown_flag))
+    #if shutdown_flag:
+    #print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}, shutdown: {3}".format(turn_angle, throttle, decode_result, shutdown_flag))
 
     #TODO: add range checks
     if decode_result:
@@ -222,13 +222,14 @@ def rf_shutdown_request_handler():
         #TODO [RC-84] define calibration variable for timeout
         if time_diff > 100: # 100ms timeout
             #print("Time since last shutdown request: {0} ms".format(time_diff))
-            print("Shutdown request reset due to timeout. Request count: {0}".format(shutdown_request_received_count))
+            #print("Shutdown request reset due to timeout. Request count: {0}".format(shutdown_request_received_count))
             shutdown_request_any_received = False
             shutdown_request_received_count = 0
     else:
         rf_comms_data.shutdown_request_confirmed = False
 
 def task_005ms():
+ # typical execution time: 5 +/-1 ms, occasionally ~12ms
     rf_receive()
 
 
