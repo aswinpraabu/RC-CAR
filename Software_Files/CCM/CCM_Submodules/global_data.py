@@ -1,5 +1,10 @@
 from machine import SPI, Pin
 
+class POWER_MODES:
+    Normal = 0
+    Prepare_Shutdown = 1
+    Shutdown = 2
+
 class hw_drivers_data_class:
     
     rfm69_SPI:SPI = None #type: ignore
@@ -21,6 +26,8 @@ class rf_comms_data_class:
 
     LOC_with_RCM = False #Flag to indicate if CCM has lost communication with RCM
 
+    shutdown_request_confirmed = False # Flag to indicate if Shutdown message has been received and confirmed
+
     def get_rx_PropulsionCtrl_data(self):
         '''
         Returns the received throttle and turn angle data.\n
@@ -34,6 +41,8 @@ class controls_data_class:
 
     led1_bat_low = False  # LED1 indicates battery is low
     led2_loc_rcm = False  # LED2 indicates CCM has lost communication with RCM
+
+    power_mode = POWER_MODES.Normal
     
 # Initialize global data instances    
 hw_drivers_data = hw_drivers_data_class()

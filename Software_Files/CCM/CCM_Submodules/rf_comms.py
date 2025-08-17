@@ -9,6 +9,13 @@ rfm69:RFM69 = None # type: ignore
 rfm69_init = False
 msg_0x0A_last_rx_time = 0 # Time of last successful reception of Propulsion Control message
 
+
+shutdown_cmd_last_rx_time = 0 # Time of last successful reception of Shutdown message
+shutdown_request_any_received = False # Flag to indicate if any shutdown request has been received
+shutdown_request_received_count = 0 # Counter for shutdown requests received
+shutdown_confirmation_min_count = 5 # Minimum number of requests required to confirm shutdown request
+#TODO [RC-83] define calibration variables in a separate file with a specific format
+
 class signal_class():
     name = ""
     factor = 1.0
@@ -58,7 +65,7 @@ class message_class():
 
 
 # Set to store valid message IDs
-# format: (MSG_ID, MSG_LEN)
+# format: (MSG_ID, DATA_LEN)
 valid_msg_set = set()
 
 def initialize():
@@ -82,6 +89,7 @@ def initialize():
 
     #TODO: initialize this set in another file. That file should also contain the message decoding functions
     valid_msg_set.add((0x0A, 3))  # Propulsion Control message
+    valid_msg_set.add((0x0B, 1))  # Shutdown message
 
     msg_0x0A_last_rx_time = ticks_ms() 
     
@@ -122,11 +130,15 @@ def packet_arbitration(packet):
     msg_id:int = packet[0]
     #print("Packet ID: {0}".format(msg_id))
     # Include checksum verification later
-    if((msg_id, len(packet)) in valid_msg_set):
+    if((msg_id, len(packet)-1) in valid_msg_set):
         raw_data = packet[1:]
         if msg_id == 0x0A:
             msg_0x0A_last_rx_time = ticks_ms()  # Update last received time for Propulsion Control message #DIAG
             decode_msg_0x0A_PropulsionCtrl(raw_data)
+        elif msg_id == 0x0B:
+            pass
+            #decode_msg_0x0B_Shutdown(raw_data)
+
     else:
         print("Invalid packet received: {0}".format(packet))
         rf_comms_data.rx_validity = False
@@ -136,9 +148,10 @@ def packet_arbitration(packet):
 def decode_msg_0x0A_PropulsionCtrl(raw_data):
     '''
     Decodes a received packet into its components.
-    Raw Data format: [TURN_ANGLE_RAW, THROTTLE_RAW]\n
+    Raw Data format: [TURN_ANGLE_RAW, THROTTLE_RAW, SHUTDOWN_CMD]\n
     turn_angle = TURN_ANGLE_RAW - 90\n
     throttle = THROTTLE_RAW - 100\n
+    shutdown_flag = True if SHUTDOWN_CMD==0xAB else False\n
     **Returns**:
     -   turn_angle (int): degrees
     -   throttle (int): percentage
@@ -146,21 +159,45 @@ def decode_msg_0x0A_PropulsionCtrl(raw_data):
     '''
     turn_angle = int(raw_data[0]) - 90
     throttle = int(raw_data[1]) - 100
+    shutdown_flag = decode_Shutdown(raw_data[2])  # Decode shutdown command
     decode_result = True
 
-    print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}".format(turn_angle, throttle, decode_result))
+    #if shutdown_flag:
+    #print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}, shutdown: {3}".format(turn_angle, throttle, decode_result, shutdown_flag))
 
     #TODO: add range checks
     if decode_result:
         rf_comms_data.rx_turn_angle = turn_angle
         rf_comms_data.rx_throttle = throttle
         rf_comms_data.rx_validity = decode_result
-
+        
         decode_result = True
     else:
         turn_angle = 0
         throttle = 0
         decode_result = False
+
+def decode_Shutdown(shutdown_raw_data):
+    '''
+    Decodes a received shutdown packet.
+    Raw Data format: [SHUTDOWN_FLAG]\n
+    shutdown_flag = True if SHUTDOWN_FLAG==0xAB\n
+    **Returns**:
+    -   shutdown_flag (bool): True if shutdown is requested, False otherwise
+    '''
+    global shutdown_cmd_last_rx_time
+    global shutdown_request_any_received
+    global shutdown_request_received_count
+
+    shutdown_flag = True if shutdown_raw_data == 0xAB else False
+    
+    if shutdown_flag:
+        #print("Received shutdown_flag: {0}".format(shutdown_flag))
+        shutdown_cmd_last_rx_time = ticks_ms()  # Update last received time for Shutdown message #DIAG
+        shutdown_request_any_received = True
+        shutdown_request_received_count += 1
+        
+    return shutdown_flag
 
 def rf_comms_diagnostics():
 
@@ -172,11 +209,45 @@ def rf_comms_diagnostics():
     else:
         rf_comms_data.LOC_with_RCM = False
         
-        
+def rf_shutdown_request_handler():
+    '''
+    Handles shutdown requests based on received packets.
+    If shutdown request is confirmed, set shutdown_request_confirmed to True.
+
+    If shutdown request is not confirmed, reset the request after a timeout.
+    '''
+    global shutdown_request_received_count
+    global shutdown_request_any_received
+
+    if shutdown_request_any_received:
+        time_diff = ticks_diff(ticks_ms(), shutdown_cmd_last_rx_time)
+        #print("Shutdown request received. Count: {0}, time diff: {1}".format(shutdown_request_received_count, time_diff))
+        if shutdown_request_received_count >= shutdown_confirmation_min_count:
+            rf_comms_data.shutdown_request_confirmed = True
+            #print("Shutdown request confirmed!")
+        else:
+            # assuming that msg_0x0B_last_rx_time is updated in decode_msg_0x0B_Shutdown
+            rf_comms_data.shutdown_request_confirmed = False
+            
+        #TODO [RC-84] define calibration variable for timeout
+        if time_diff > 100: # 100ms timeout
+            #print("Time since last shutdown request: {0} ms".format(time_diff))
+            #print("Shutdown request reset due to timeout. Request count: {0}".format(shutdown_request_received_count))
+            shutdown_request_any_received = False
+            shutdown_request_received_count = 0
+    else:
+        rf_comms_data.shutdown_request_confirmed = False
 
 def task_005ms():
+ # typical execution time: 5 +/-1 ms, occasionally ~12ms
     rf_receive()
 
 
 def task_010ms():
     rf_comms_diagnostics()
+
+    # Minimum time to confirm shutdown request = 50ms
+    # Minimum time to reset shutdown request = 100ms
+    # At 10ms interval, worst case is 60ms to confirm and 110ms to reset
+    # This is acceptable for the system. Can even be extended to 20ms for more reduction in processing
+    rf_shutdown_request_handler()
