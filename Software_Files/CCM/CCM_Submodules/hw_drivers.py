@@ -1,6 +1,6 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
 from CCM_Submodules.global_data import POWER_MODES
-from machine import SPI, Pin,PWM
+from machine import SPI, Pin,PWM, soft_reset
 
 # region RFM69
 # Define pin numbers for RFM69 module
@@ -160,3 +160,4 @@ def task_005ms():
 
 def task_100ms():
     led_control()
+    power_control()
