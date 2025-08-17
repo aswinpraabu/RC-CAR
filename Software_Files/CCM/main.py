@@ -1,4 +1,4 @@
-from CCM_Submodules import global_data,actuators
+#from CCM_Submodules import global_data,actuators
 from CCM_Submodules import hw_drivers
 from CCM_Submodules import rf_comms
 from CCM_Submodules import controls
