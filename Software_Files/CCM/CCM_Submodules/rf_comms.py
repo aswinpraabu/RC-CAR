@@ -204,7 +204,7 @@ def rf_shutdown_request_handler():
     '''
     global shutdown_request_received_count
     global shutdown_request_any_received
-    
+
     if shutdown_request_any_received:
         print("Shutdown request received. Count: {0}".format(shutdown_request_received_count))
         if shutdown_request_received_count >= shutdown_confirmation_min_count:
@@ -215,11 +215,11 @@ def rf_shutdown_request_handler():
             time_diff = ticks_diff(ticks_ms(), msg_0x0B_last_rx_time)
             
             #TODO [RC-84] define calibration variable for timeout
-            if time_diff > 100: # 100ms timeout
-                print("Time since last shutdown request: {0} ms".format(time_diff))
-                shutdown_request_any_received = False
-                shutdown_request_received_count = 0
-                print("Shutdown request reset due to timeout.")
+        if time_diff > 100: # 100ms timeout
+            print("Time since last shutdown request: {0} ms".format(time_diff))
+            shutdown_request_any_received = False
+            shutdown_request_received_count = 0
+            print("Shutdown request reset due to timeout.")
             rf_comms_data.shutdown_request_confirmed = False
     else:
         rf_comms_data.shutdown_request_confirmed = False
