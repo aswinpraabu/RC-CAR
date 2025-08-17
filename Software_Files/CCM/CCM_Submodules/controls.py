@@ -19,7 +19,7 @@ def motor_control():
     else:
         # If data is invalid or not in Normal mode, stop the car
         controls_data.car_throttle = 0
-        controls_data.car_turn_angle = 0
+        
         
 
 
