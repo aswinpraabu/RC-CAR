@@ -6,7 +6,7 @@ CCM_RF_ADDR = 0x11
 RCM_RF_ADDR = 0x22
 RADIO_FREQ_MHZ = 433
 rfm69:RFM69 = None # type: ignore
-
+rfm69_init = False
 msg_0x0A_last_rx_time = 0 # Time of last successful reception of Propulsion Control message
 
 class signal_class():
@@ -66,13 +66,19 @@ def initialize():
 
     global rfm69
     global msg_0x0A_last_rx_time
-
-    # Initialize RFM radio
-    rfm69_SPI, rfm69_CS, rfm69_RESET = hw_drivers_data.get_rfm69_info()
-    rfm69 = RFM69(rfm69_SPI, rfm69_CS, rfm69_RESET, RADIO_FREQ_MHZ)
-    rfm69.high_power = True  # Only for RFM69HW!
-    rfm69.node = CCM_RF_ADDR
-    rfm69.destination = RCM_RF_ADDR
+    global rfm69_init
+    try:
+        # Initialize RFM radio
+        rfm69_SPI, rfm69_CS, rfm69_RESET = hw_drivers_data.get_rfm69_info()
+        rfm69 = RFM69(rfm69_SPI, rfm69_CS, rfm69_RESET, RADIO_FREQ_MHZ)
+        rfm69.high_power = True  # Only for RFM69HW!
+        rfm69.node = CCM_RF_ADDR
+        rfm69.destination = RCM_RF_ADDR
+        rfm69_init = True
+        print("RFM69 radio initialized successfully.")
+    except Exception as e:
+        rfm69_init = False
+        print("Error initializing RFM69 radio: {0}".format(e))
 
     #TODO: initialize this set in another file. That file should also contain the message decoding functions
     valid_msg_set.add((0x0A, 3))  # Propulsion Control message
@@ -84,6 +90,10 @@ def rf_receive():
 
     # 5ms timeout for receiving packets
     # timeout > 5ms does not increase RX success rate
+    if not rfm69_init:
+        #print("RFM69 not initialized. Cannot receive packets.")
+        rf_comms_data.rx_validity = False
+        return rf_comms_data.rx_validity
     packet = rfm69.receive(timeout=5, keep_listening=True)
     
     if packet is not None:
@@ -158,7 +168,7 @@ def rf_comms_diagnostics():
     #print("Diff: ", time_diff)
     if time_diff > 100: # 100ms timeout
         rf_comms_data.LOC_with_RCM = True
-        print("CCM has lost communication with RCM!")
+        #print("CCM has lost communication with RCM!")
     else:
         rf_comms_data.LOC_with_RCM = False
         
