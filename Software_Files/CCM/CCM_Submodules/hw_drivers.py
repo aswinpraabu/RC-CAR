@@ -1,5 +1,6 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
-from machine import SPI, Pin,PWM
+from CCM_Submodules.global_data import POWER_MODES
+from machine import SPI, Pin,PWM, soft_reset
 
 # region RFM69
 # Define pin numbers for RFM69 module
@@ -18,7 +19,9 @@ LED2_LOC_RCM_PIN = 25
 MOTOR_FWD_PIN = 15
 MOTOR_REV_PIN = 14
 
-
+POWER_ON_PIN_NUM = 13
+POWER_ON_PIN = Pin(POWER_ON_PIN_NUM, Pin.OUT)
+POWER_ON_PIN.value(1)  # Set high to power on the system
 
 LED2 = Pin(LED2_LOC_RCM_PIN, Pin.OUT)
 LED2.value(0)  # Turn off LED initially
@@ -139,6 +142,9 @@ def motor_control():
     steering_servo.set_angle(controls_data.car_turn_angle)
     propulsion_motor.set_power(controls_data.car_throttle)
 
+def power_control():
+    if controls_data.power_mode == POWER_MODES.Shutdown:
+        POWER_ON_PIN.value(0)
 
 def hw_drivers_diagnostics():
     #TODO [RC-78,RC-77]: Add diagnostics for battery voltage
@@ -154,3 +160,4 @@ def task_005ms():
 
 def task_100ms():
     led_control()
+    power_control()
