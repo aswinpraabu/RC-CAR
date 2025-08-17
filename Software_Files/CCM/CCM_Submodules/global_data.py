@@ -21,6 +21,8 @@ class rf_comms_data_class:
 
     LOC_with_RCM = False #Flag to indicate if CCM has lost communication with RCM
 
+    shutdown_request_confirmed = False # Flag to indicate if Shutdown message has been received and confirmed
+
     def get_rx_PropulsionCtrl_data(self):
         '''
         Returns the received throttle and turn angle data.\n
