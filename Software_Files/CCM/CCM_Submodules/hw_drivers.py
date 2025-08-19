@@ -14,7 +14,7 @@ a.duty_ns()
 
 # endregion
 SERVO_PIN = 21
-LED2_LOC_RCM_PIN = 25
+LED2_LOC_RCM_PIN = 'LED'
 
 MOTOR_FWD_PIN = 15
 MOTOR_REV_PIN = 14
