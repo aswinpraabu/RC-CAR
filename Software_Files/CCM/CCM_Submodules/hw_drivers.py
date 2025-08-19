@@ -108,7 +108,7 @@ class DC_Motor:
             print(f"power must be between {self.min_power} and {self.max_power}")
             duty_ns = 0
         else:    
-            duty_ns = int((abs(power) * 1000)) # percent to ns
+            duty_ns = int((abs(power) * 10000)) # percent to ns
         return duty_ns
     
 
