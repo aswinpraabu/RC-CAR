@@ -89,6 +89,7 @@ class DC_Motor:
     def set_power(self, power):
         # Set the power of the motor
         duty_ns = self._power_to_duty_ns(power)
+        print(f"Setting motor power to {power}, duty_ns: {duty_ns}")
 
         if power > 0:
             self.forward_pwm.duty_ns(duty_ns)
@@ -141,6 +142,7 @@ def motor_control():
 
     steering_servo.set_angle(controls_data.car_turn_angle)
     propulsion_motor.set_power(controls_data.car_throttle)
+    #print(f"Steering angle: {controls_data.car_turn_angle}, Motor power: {controls_data.car_throttle}")
 
 def power_control():
     if controls_data.power_mode == POWER_MODES.Shutdown:
