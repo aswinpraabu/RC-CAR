@@ -1,6 +1,7 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data
 from CCM_Libraries.micropython_rfm69 import *
 from time import ticks_ms, ticks_diff
+from CCM_Submodules.calibrations import RF_COMMS_Class as CAL
 
 CCM_RF_ADDR = 0x11
 RCM_RF_ADDR = 0x22
@@ -230,7 +231,7 @@ def rf_shutdown_request_handler():
             rf_comms_data.shutdown_request_confirmed = False
             
         #TODO [RC-84] define calibration variable for timeout
-        if time_diff > 100: # 100ms timeout
+        if time_diff > CAL.CAL_t_shutdown_timeout_ms: # 100ms timeout
             #print("Time since last shutdown request: {0} ms".format(time_diff))
             #print("Shutdown request reset due to timeout. Request count: {0}".format(shutdown_request_received_count))
             shutdown_request_any_received = False
