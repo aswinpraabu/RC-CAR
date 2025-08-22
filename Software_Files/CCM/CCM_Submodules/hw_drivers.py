@@ -1,6 +1,7 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
 from CCM_Submodules.global_data import POWER_MODES
 from machine import SPI, Pin,PWM, soft_reset
+from CCM_Submodules.calibrations import HW_DRIVERS_Calibrations as CAL
 
 # region RFM69
 # Define pin numbers for RFM69 module
@@ -39,10 +40,10 @@ class Servo:
         self.max_angle = 90.0 # Maximum angle
         self.min_duty_ns = 1.0e6 # (1ms) Minimum duty cycle in nanoseconds
         self.max_duty_ns = 2.0e6 # (2ms)Maximum duty cycle in nanoseconds
-        self.freq = 50
+        self.freq = CAL.CAL_f_servo_freq
 
-        self.min_duty_offset_ms = -0.5344 # Offset for minimum duty cycle
-        self.max_duty_offset_ms = 0.57 # Offset for maximum duty cycle
+        self.min_duty_offset_ms = CAL.CAL_t_servo_min_duty_offset_ms # Offset for minimum duty cycle
+        self.max_duty_offset_ms = CAL.CAL_t_servo_max_duty_offset_ms # Offset for maximum duty cycle
         self.min_duty_ns += int(self.min_duty_offset_ms * 1e6)  # Convert ms to ns
         self.max_duty_ns += int(self.max_duty_offset_ms * 1e6)  # Convert ms to ns
         
@@ -96,7 +97,7 @@ class DC_Motor:
             self.reverse_pwm.duty_ns(0)
         elif power < 0:
             self.forward_pwm.duty_ns(0)
-            self.reverse_pwm.duty_ns(int(duty_ns*0.5)) # Reverse motor at half power
+            self.reverse_pwm.duty_ns(int(duty_ns*CAL.CAL_p_dc_motor_reverse_factor/100)) # Reverse motor at half power
         
         
     def _power_to_duty_ns(self, power: float) -> int:

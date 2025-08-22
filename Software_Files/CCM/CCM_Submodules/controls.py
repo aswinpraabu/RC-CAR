@@ -1,11 +1,11 @@
-from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
+from CCM_Submodules.global_data import rf_comms_data, controls_data
 from CCM_Submodules.global_data import POWER_MODES
 from time import ticks_ms, ticks_diff
-
+from CCM_Submodules.calibrations import CONTROLS_Calibrations as CAL
 
 
 Prepare_Shutdown_start_time = 0  # Time when Prepare_Shutdown mode started
-Prepare_Shutdown_duration_ms = 5000  # Duration to stay in Prepare_Shutdown mode
+
 
 def initialize():
     pass
@@ -35,7 +35,7 @@ def power_control():
 
     elif controls_data.power_mode == POWER_MODES.Prepare_Shutdown:
         elapsed_time = ticks_diff(ticks_ms(), Prepare_Shutdown_start_time)
-        if elapsed_time >= Prepare_Shutdown_duration_ms:
+        if elapsed_time >= CAL.CAL_t_Prepare_Shutdown_duration_ms:
             # Transition to Shutdown mode after the duration
             controls_data.power_mode = POWER_MODES.Shutdown
             print("Transitioning to Shutdown mode")
