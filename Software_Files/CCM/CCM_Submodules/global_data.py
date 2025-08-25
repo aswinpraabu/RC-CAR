@@ -11,6 +11,11 @@ class hw_drivers_data_class:
     rfm69_CS:Pin = None #type: ignore
     rfm69_RESET:Pin = None #type: ignore
 
+    battery_voltage = 0.0  # Battery voltage in volts
+    battery_voltage_validity = False  # Flag indicating if battery voltage reading is valid
+    battery_current = 0.0  # Battery current in milliamps
+    battery_current_validity = False  # Flag indicating if battery current reading is valid
+
 
     def get_rfm69_info(self):
         '''
