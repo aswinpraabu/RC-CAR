@@ -128,6 +128,8 @@ propulsion_motor = DC_Motor()
 
 def initialize():
     print("Initializing hardware drivers...")
+
+    # Initialize INA260 sensor
     global ina260_sensor
     i2c_obj = I2C(0, scl=Pin(I2C_SCL_PIN), sda=Pin(I2C_SDA_PIN))
     ina260_sensor = INA260(i2c_obj, INA260_ADDR)
@@ -135,6 +137,7 @@ def initialize():
     ina260_sensor.current_conversion_time = CAL.CAL_t_ina260_current_conversion_time
     ina260_sensor.averaging_count = CAL.CAL_n_ina260_averaging_count
 
+    # Initialize RFM69 SPI and pins
     hw_drivers_data.rfm69_SPI = SPI(
                                     0,
                                     baudrate=500_000,
