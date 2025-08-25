@@ -28,6 +28,14 @@ POWER_ON_PIN.value(1)  # Set high to power on the system
 LED2 = Pin(LED2_LOC_RCM_PIN, Pin.OUT)
 LED2.value(0)  # Turn off LED initially
 
+# Region INA260 (I2C) - Battery Voltage and Current Sensor
+# I2C pins
+I2C_SCL_PIN = 5
+I2C_SDA_PIN = 4
+
+INA260_ADDR = 0x40
+
+
 class Servo:
     def __init__(self):
         pass
