@@ -196,7 +196,11 @@ def task_005ms():
     This function is called every 5ms to update the servo position based on the received data.
     '''
     motor_control()
+    read_battery_current()
 
 def task_100ms():
     led_control()
     power_control()
+    read_battery_voltage()
+    hw_drivers_diagnostics()
+    #print(f"Battery Voltage: {hw_drivers_data.battery_voltage:.2f} V, Battery Current: {hw_drivers_data.battery_current:.2f} mA")
