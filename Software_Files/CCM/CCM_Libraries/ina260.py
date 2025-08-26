@@ -1,4 +1,5 @@
 from micropython import const
+from machine import I2C
 
 _REG_CONFIG = const(0x00)  # CONFIGURATION REGISTER (R/W)
 _REG_CURRENT = const(0x01)  # SHUNT VOLTAGE REGISTER (R)
@@ -40,21 +41,13 @@ class RWBits:
         if self.bit_mask >= 1 << (register_width * 8):
             raise ValueError("Cannot have more bits than register size")
         self.lowest_bit = lowest_bit
-        self.buffer = bytearray(1 + register_width)
-        self.buffer[0] = register_address
+        self.buf = bytearray(1 + register_width)
+        self.register_address = register_address
         self.lsb_first = lsb_first
         self.sign_bit = (1 << (num_bits - 1)) if signed else 0
 
     def __get__(self, obj, objtype=None):
-        with obj.i2c_device as i2c:
-            i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
-        # read the number of bytes into a single variable
-        reg = 0
-        order = range(len(self.buffer) - 1, 0, -1)
-        if not self.lsb_first:
-            order = reversed(order)
-        for i in order:
-            reg = (reg << 8) | self.buffer[i]
+        reg = obj._read_register(self.register_address)
         reg = (reg & self.bit_mask) >> self.lowest_bit
         # If the value is signed and negative, convert it
         if reg & self.sign_bit:
@@ -63,22 +56,12 @@ class RWBits:
 
     def __set__(self, obj, value):
         value <<= self.lowest_bit  # shift the value over to the right spot
-        with obj.i2c_device as i2c:
-            i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
-            reg = 0
-            order = range(len(self.buffer) - 1, 0, -1)
-            if not self.lsb_first:
-                order = range(1, len(self.buffer))
-            for i in order:
-                reg = (reg << 8) | self.buffer[i]
-            # print("old reg: ", hex(reg))
-            reg &= ~self.bit_mask  # mask off the bits we're about to change
-            reg |= value  # then or in our new value
-            # print("new reg: ", hex(reg))
-            for i in reversed(order):
-                self.buffer[i] = reg & 0xFF
-                reg >>= 8
-            i2c.write(self.buffer)
+        reg_value = obj._read_register(self.register_address)
+        reg_value &= ~self.bit_mask  # zero out the bits we care about
+        reg_value |= value & self.bit_mask  # set the bits to the new value
+        obj._write_register(self.register_address, reg_value)
+
+
 
 class ROBits(RWBits):
     """
