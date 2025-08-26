@@ -3,6 +3,7 @@ from CCM_Submodules.global_data import POWER_MODES
 from machine import SPI, Pin,PWM, soft_reset, I2C
 from CCM_Submodules.calibrations import HW_DRIVERS_Calibrations as CAL
 from CCM_Libraries.ina260 import INA260, AveragingCount, ConversionTime
+from time import sleep_ms
 
 # region RFM69
 # Define pin numbers for RFM69 module
@@ -100,7 +101,7 @@ class DC_Motor:
     def set_power(self, power):
         # Set the power of the motor
         duty_ns = self._power_to_duty_ns(power)
-        print(f"Setting motor power to {power}, duty_ns: {duty_ns}")
+        #print(f"Setting motor power to {power}, duty_ns: {duty_ns}")
 
         if power > 0:
             self.forward_pwm.duty_ns(duty_ns)
@@ -204,3 +205,11 @@ def task_100ms():
     read_battery_voltage()
     hw_drivers_diagnostics()
     #print(f"Battery Voltage: {hw_drivers_data.battery_voltage:.2f} V, Battery Current: {hw_drivers_data.battery_current:.2f} mA")
+
+
+if __name__ == "__main__":
+    initialize()
+    while True:
+        task_005ms()
+        task_100ms()
+        sleep_ms(500)
