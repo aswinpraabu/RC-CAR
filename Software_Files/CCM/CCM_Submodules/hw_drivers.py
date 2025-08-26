@@ -28,13 +28,14 @@ POWER_ON_PIN.value(1)  # Set high to power on the system
 LED2 = Pin(LED2_LOC_RCM_PIN, Pin.OUT)
 LED2.value(0)  # Turn off LED initially
 
-# Region INA260 (I2C) - Battery Voltage and Current Sensor
+# region INA260 
+# (I2C) - Battery Voltage and Current Sensor
 # I2C pins
 I2C_SCL_PIN = 5
 I2C_SDA_PIN = 4
 
 INA260_ADDR = 0x40
-
+# endregion
 
 class Servo:
     def __init__(self):
@@ -155,6 +156,7 @@ def initialize():
     steering_servo.configure_pin(SERVO_PIN)
     propulsion_motor.configure_pin(MOTOR_FWD_PIN, MOTOR_REV_PIN)
 
+# region Ouput
 def led_control():
     LED2.value(controls_data.led2_loc_rcm)
 
@@ -167,6 +169,21 @@ def motor_control():
 def power_control():
     if controls_data.power_mode == POWER_MODES.Shutdown:
         POWER_ON_PIN.value(0)
+
+# endregion
+
+# region input
+def read_battery_voltage():
+    voltage = ina260_sensor.voltage  # Voltage in millivolts
+    hw_drivers_data.battery_voltage = voltage / 1000.0  # Convert to volts
+    hw_drivers_data.battery_voltage_validity = True  # Assume reading is valid for now
+
+def read_battery_current():
+    current = ina260_sensor.current  # Current in milliamps
+    hw_drivers_data.battery_current = current  # Already in milliamps
+    hw_drivers_data.battery_current_validity = True  # Assume reading is valid for now
+
+# endregion
 
 def hw_drivers_diagnostics():
     #TODO [RC-78,RC-77]: Add diagnostics for battery voltage
