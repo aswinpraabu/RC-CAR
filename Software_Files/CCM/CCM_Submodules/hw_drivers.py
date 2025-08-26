@@ -175,8 +175,8 @@ def power_control():
 
 # region input
 def read_battery_voltage():
-    voltage = ina260_sensor.voltage  # Voltage in millivolts
-    hw_drivers_data.battery_voltage = voltage / 1000.0  # Convert to volts
+    voltage = ina260_sensor.voltage  # Voltage 
+    hw_drivers_data.battery_voltage = voltage  # Convert to volts
     hw_drivers_data.battery_voltage_validity = True  # Assume reading is valid for now
 
 def read_battery_current():
