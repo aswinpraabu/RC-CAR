@@ -29,6 +29,15 @@ class HW_DRIVERS_Class:
     CAL_t_ina260_current_conversion_time = ConversionTime.TIME_1_1_ms # Current conversion time in ms
     CAL_n_ina260_averaging_count = AveragingCount.COUNT_4  # Number of samples to average
 
+    # Diagnostics calibration parameters
+    CAL_v_battery_low_warn = const(8)  # Minimum battery voltage in volts
+    CAL_t_battery_low_warn_mature_time_ms = const(10000)  # Duration battery voltage must be low to trigger warning in ms
+    CAL_t_battery_low_warn_demature_time_ms = const(10000)  # Duration battery voltage must not be low to clear warning in ms
+
+    CAL_v_battery_low_critical = const(7.2)  # Critical battery voltage in volts
+    CAL_t_battery_low_critical_mature_time_ms = const(5000)  # Duration battery voltage must be low to trigger critical in ms
+    CAL_t_battery_low_critical_demature_time_ms = const(10000)  # Duration battery voltage must not be low to clear critical in ms
+
 class CONTROLS_Class:
     CAL_t_Prepare_Shutdown_duration_ms = const(5000)  # Duration to stay in Prepare_Shutdown mode
 

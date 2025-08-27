@@ -1,9 +1,9 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data, controls_data
-from CCM_Submodules.global_data import POWER_MODES
+from CCM_Submodules.global_data import POWER_MODES, diagnostics_class
 from machine import SPI, Pin,PWM, soft_reset, I2C
 from CCM_Submodules.calibrations import HW_DRIVERS_Calibrations as CAL
 from CCM_Libraries.ina260 import INA260, AveragingCount, ConversionTime
-from time import sleep_ms
+from time import sleep_ms, ticks_diff, ticks_ms
 
 # region RFM69
 # Define pin numbers for RFM69 module
@@ -123,11 +123,9 @@ class DC_Motor:
         else:    
             duty_ns = int((abs(power) * 10000)) # percent to ns
         return duty_ns
-    
 
 steering_servo = Servo()
 propulsion_motor = DC_Motor()
-
 def initialize():
     print("Initializing hardware drivers...")
 
@@ -156,6 +154,19 @@ def initialize():
 
     steering_servo.configure_pin(SERVO_PIN)
     propulsion_motor.configure_pin(MOTOR_FWD_PIN, MOTOR_REV_PIN)
+
+    hw_drivers_data.battery_voltage_low_warn_diag = diagnostics_class(
+                                    id=1,
+                                    name="Battery Voltage Low Warn",
+                                    mature_time=CAL.CAL_t_battery_low_warn_mature_time_ms,
+                                    demature_time=CAL.CAL_t_battery_low_warn_demature_time_ms
+                                    )
+    hw_drivers_data.battery_voltage_low_critical_diag =  diagnostics_class(
+                                    id=2,
+                                    name="Battery Voltage Low Critical",
+                                    mature_time=CAL.CAL_t_battery_low_critical_mature_time_ms,
+                                    demature_time=CAL.CAL_t_battery_low_critical_demature_time_ms
+                                    )
 
 # region Ouput
 def led_control():
@@ -188,7 +199,22 @@ def read_battery_current():
 
 def hw_drivers_diagnostics():
     #TODO [RC-78,RC-77]: Add diagnostics for battery voltage
-    #TODO:Add diagnostics for current sensors
+
+    if hw_drivers_data.battery_voltage_validity:
+        # Check Battery Voltage Critical first
+        if hw_drivers_data.battery_voltage < CAL.CAL_v_battery_low_critical:
+            hw_drivers_data.battery_voltage_low_critical_diag.test_fail()
+        else:
+            hw_drivers_data.battery_voltage_low_critical_diag.test_pass()
+
+        # Then check Battery Voltage Warn
+        if hw_drivers_data.battery_voltage < CAL.CAL_v_battery_low_warn:
+            hw_drivers_data.battery_voltage_low_warn_diag.test_fail()
+        else:
+            hw_drivers_data.battery_voltage_low_warn_diag.test_pass()
+    
+            
+    #TODO [RC-92]:Add diagnostics for current sensors
     pass
 
 
