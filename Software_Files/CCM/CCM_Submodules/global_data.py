@@ -16,6 +16,11 @@ class hw_drivers_data_class:
     battery_current = 0.0  # Battery current in milliamps
     battery_current_validity = False  # Flag indicating if battery current reading is valid
 
+    battery_voltage_low_warn = False  # Flag indicating if battery voltage is low (warning level)
+    battery_voltage_low_critical = False  # Flag indicating if battery voltage is critically low
+    battery_voltage_low_warn_diag:diagnostics_class = None #type: ignore
+    battery_voltage_low_critical_diag:diagnostics_class = None #type: ignore
+
 
     def get_rfm69_info(self):
         '''
