@@ -5,6 +5,63 @@ class POWER_MODES:
     Prepare_Shutdown = 1
     Shutdown = 2
 
+class diagnostic_status:
+    Not_Tested = -1
+    OK = 1
+    FAIL = 2
+class diagnostics_class:
+    _id = 0
+    _name = ""
+    _diag_status = -1 # Possible values: "-1 Not Tested", "1 OK", "2 FAIL"
+    _last_test_fail = False
+    _test_fail_start_time = 0
+    _test_pass_start_time = 0
+
+    _mature_time_ms = 0
+    _demature_time_ms = 0
+    def __init__(self, id:int, name:str, mature_time:int, demature_time:int):
+        self._id = id
+        self._name = name
+        self._mature_time_ms = mature_time
+        self._demature_time_ms = demature_time
+        self._test_fail_start_time = 0
+        self._test_pass_start_time = 0
+        self._diag_status = -1
+        self._last_test_fail = False
+
+    def test_fail(self):
+        current_time = ticks_ms()
+        if not self._last_test_fail:
+            # if last test was not a fail, set the flag & start the timer
+            self._test_fail_start_time = current_time
+            self._last_test_fail = True
+        elif self._last_test_fail and self._diag_status != 2:
+            # if last test was a fail, check if mature time has passed
+            elapsed_time = ticks_diff(current_time, self._test_fail_start_time)
+            if elapsed_time >= self._mature_time_ms:
+                self._diag_status = 2
+                print(f"Diag {self._name} (ID: {self._id}) diagnostic status changed to FAIL")
+    
+    def test_pass(self):
+        current_time = ticks_ms()
+        if self._last_test_fail:
+            # if last test was a fail, set the flag & start the timer
+            self._test_pass_start_time = current_time
+            self._last_test_fail = False
+        elif not self._last_test_fail and self._diag_status != 1:
+            # if last test was a pass, check if demature time has passed
+            elapsed_time = ticks_diff(current_time, self._test_pass_start_time)
+            if elapsed_time >= self._demature_time_ms:
+                self._diag_status = 1
+                print(f"Diag {self._name} (ID: {self._id}) diagnostic status changed to OK")
+    def reset_status(self):
+        self._diag_status = -1
+        self._last_test_fail = False
+        self._test_fail_start_time = 0
+        self._test_pass_start_time = 0
+    def get_status(self):
+        return self._diag_status
+
 class hw_drivers_data_class:
     
     rfm69_SPI:SPI = None #type: ignore
