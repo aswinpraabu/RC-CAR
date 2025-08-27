@@ -1,4 +1,5 @@
 from machine import SPI, Pin
+from time import ticks_ms, ticks_diff
 
 class POWER_MODES:
     Normal = 0
