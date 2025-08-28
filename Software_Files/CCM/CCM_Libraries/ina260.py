@@ -260,9 +260,14 @@ class INA260:
     """
 
     def __init__(self, i2c_device, address=0x40):
-        self.i2c_device = i2c_device
+        self.i2c_device:I2C = i2c_device
         self.i2c_addr = address
+
         self.buf = bytearray(2)
+        self.init_success = self.i2c_addr in self.i2c_device.scan()
+        if not self.init_success:
+            print("INA260 not found at address: ", hex(self.i2c_addr))
+            return
     
     def _write_register(self, reg, value):
         self.buf[0] = (value >> 8) & 0xFF
