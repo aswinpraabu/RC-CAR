@@ -12,6 +12,7 @@ def initialize():
 
 
 def motor_control():
+    #print(rf_comms_data.rx_validity, controls_data.power_mode)
     if rf_comms_data.rx_validity and controls_data.power_mode == POWER_MODES.Normal:
         # Update car throttle and turn angle based on received data
         controls_data.car_throttle = rf_comms_data.rx_throttle
