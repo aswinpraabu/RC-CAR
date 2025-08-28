@@ -99,10 +99,11 @@ def rf_receive():
 
     # 5ms timeout for receiving packets
     # timeout > 5ms does not increase RX success rate
-    if not rfm69_init:
+    if not rfm69_init or rfm69 is None:
         #print("RFM69 not initialized. Cannot receive packets.")
         rf_comms_data.rx_validity = False
-        return rf_comms_data.rx_validity
+        return
+        
     packet = rfm69.receive(timeout=5, keep_listening=True)
     
     if packet is not None:
