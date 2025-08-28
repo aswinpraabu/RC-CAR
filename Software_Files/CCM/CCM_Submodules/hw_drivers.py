@@ -103,7 +103,7 @@ class DC_Motor:
         duty_ns = self._power_to_duty_ns(power)
         #print(f"Setting motor power to {power}, duty_ns: {duty_ns}")
 
-        if power > 0:
+        if power >= 0:
             self.forward_pwm.duty_ns(duty_ns)
             self.reverse_pwm.duty_ns(0)
         elif power < 0:
