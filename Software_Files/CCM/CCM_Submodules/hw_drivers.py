@@ -133,9 +133,10 @@ def initialize():
     global ina260_sensor
     i2c_obj = I2C(0, scl=Pin(I2C_SCL_PIN), sda=Pin(I2C_SDA_PIN))
     ina260_sensor = INA260(i2c_obj, INA260_ADDR)
-    ina260_sensor.voltage_conversion_time = CAL.CAL_t_ina260_voltage_conversion_time
-    ina260_sensor.current_conversion_time = CAL.CAL_t_ina260_current_conversion_time
-    ina260_sensor.averaging_count = CAL.CAL_n_ina260_averaging_count
+    if ina260_sensor.init_success:
+        ina260_sensor.voltage_conversion_time = CAL.CAL_t_ina260_voltage_conversion_time
+        ina260_sensor.current_conversion_time = CAL.CAL_t_ina260_current_conversion_time
+        ina260_sensor.averaging_count = CAL.CAL_n_ina260_averaging_count
 
     # Initialize RFM69 SPI and pins
     hw_drivers_data.rfm69_SPI = SPI(
@@ -186,14 +187,22 @@ def power_control():
 
 # region input
 def read_battery_voltage():
-    voltage = ina260_sensor.voltage  # Voltage 
-    hw_drivers_data.battery_voltage = voltage  # Convert to volts
-    hw_drivers_data.battery_voltage_validity = True  # Assume reading is valid for now
+    if ina260_sensor.init_success:
+        voltage = ina260_sensor.voltage  # Voltage 
+        hw_drivers_data.battery_voltage = voltage  # Convert to volts
+        hw_drivers_data.battery_voltage_validity = True  # Assume reading is valid for now
+    else:
+        hw_drivers_data.battery_voltage = 0.0
+        hw_drivers_data.battery_voltage_validity = False
 
 def read_battery_current():
-    current = ina260_sensor.current  # Current in milliamps
-    hw_drivers_data.battery_current = current  # Already in milliamps
-    hw_drivers_data.battery_current_validity = True  # Assume reading is valid for now
+    if ina260_sensor.init_success:
+        current = ina260_sensor.current  # Current in milliamps
+        hw_drivers_data.battery_current = current  # Already in milliamps
+        hw_drivers_data.battery_current_validity = True  # Assume reading is valid for now
+    else:
+        hw_drivers_data.battery_current = 0.0
+        hw_drivers_data.battery_current_validity = False
 
 # endregion
 
