@@ -166,7 +166,7 @@ def decode_msg_0x0A_PropulsionCtrl(raw_data):
     #if shutdown_flag:
     #print("Received rx_turn_angle: {0}, rx_throttle: {1}, rx_validity: {2}, shutdown: {3}".format(turn_angle, throttle, decode_result, shutdown_flag))
 
-    #TODO: add range checks
+    #TODO [RC-97] add range checks
     if decode_result:
         rf_comms_data.rx_turn_angle = turn_angle
         rf_comms_data.rx_throttle = throttle
