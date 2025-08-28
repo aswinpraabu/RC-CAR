@@ -121,7 +121,6 @@ def rf_receive():
         #print("Received nothing! Listening again...")
         rf_comms_data.rx_validity = False
 
-    return rf_comms_data.rx_validity
     
 def packet_arbitration(packet):
     '''
