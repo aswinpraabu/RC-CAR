@@ -28,7 +28,7 @@ class diagnostics_class:
         self._demature_time_ms = demature_time
         self._test_fail_start_time = 0
         self._test_pass_start_time = 0
-        self._diag_status = -1
+        self._diag_status = DIAG_STATUS.Not_Tested
         self._last_test_fail = False
 
     def test_fail(self):
@@ -96,7 +96,7 @@ class rf_comms_data_class:
     LOC_with_RCM = False #Flag to indicate if CCM has lost communication with RCM
 
     shutdown_request_confirmed = False # Flag to indicate if Shutdown message has been received and confirmed
-
+    LOC_with_RCM_diag:diagnostics_class = None #type: ignore
     def get_rx_PropulsionCtrl_data(self):
         '''
         Returns the received throttle and turn angle data.\n

@@ -1,4 +1,5 @@
 from CCM_Submodules.global_data import hw_drivers_data, rf_comms_data
+from CCM_Submodules.global_data import diagnostics_class
 from CCM_Libraries.micropython_rfm69 import *
 from time import ticks_ms, ticks_diff
 from CCM_Submodules.calibrations import RF_COMMS_Class as CAL
@@ -91,6 +92,13 @@ def initialize():
     #TODO: initialize this set in another file. That file should also contain the message decoding functions
     valid_msg_set.add((0x0A, 3))  # Propulsion Control message
     valid_msg_set.add((0x0B, 1))  # Shutdown message
+
+    rf_comms_data.LOC_with_RCM_diag = diagnostics_class(
+                                    id=3,
+                                    name="LOC_with_RCM_diag",
+                                    mature_time=60000, # 1 minute
+                                    demature_time=300 
+                                    )
 
     msg_0x0A_last_rx_time = ticks_ms() 
     
@@ -206,8 +214,10 @@ def rf_comms_diagnostics():
     #print("Diff: ", time_diff)
     if time_diff > 100: # 100ms timeout
         rf_comms_data.LOC_with_RCM = True
+        rf_comms_data.LOC_with_RCM_diag.test_fail()
         #print("CCM has lost communication with RCM!")
     else:
+        rf_comms_data.LOC_with_RCM_diag.test_pass()
         rf_comms_data.LOC_with_RCM = False
         
 def rf_shutdown_request_handler():
