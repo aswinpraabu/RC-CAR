@@ -17,7 +17,7 @@ def motor_control():
     # Check if all conditions are met to enable driving
     comms_data_check = rf_comms_data.rx_validity
     power_mode_check = controls_data.power_mode == POWER_MODES.Normal
-    safety_check = hw_drivers_data.battery_voltage_low_critical_diag.get_status() == DIAG_STATUS.OK
+    safety_check = hw_drivers_data.battery_voltage_low_critical_diag.get_status() is not DIAG_STATUS.FAIL
     drive_enable = all([comms_data_check, power_mode_check, safety_check])
 
     if drive_enable:
