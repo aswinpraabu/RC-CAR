@@ -33,8 +33,7 @@ def motor_control():
 
 def power_control():
     global Prepare_Shutdown_start_time
-    
-    if controls_data.power_mode == POWER_MODES.Normal and rf_comms_data.shutdown_request_confirmed:
+        hw_drivers_data.battery_voltage_low_critical_diag.get_status() is DIAG_STATUS.FAIL])
         # Transition to Prepare_Shutdown mode
         controls_data.power_mode = POWER_MODES.Prepare_Shutdown
         
