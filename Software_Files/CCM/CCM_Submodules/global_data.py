@@ -1,15 +1,16 @@
+from micropython import const
 from machine import SPI, Pin
 from time import ticks_ms, ticks_diff
 
 class POWER_MODES:
-    Normal = 0
-    Prepare_Shutdown = 1
-    Shutdown = 2
+    Normal = const(0)
+    Prepare_Shutdown = const(1)
+    Shutdown = const(2)
 
-class diagnostic_status:
-    Not_Tested = -1
-    OK = 1
-    FAIL = 2
+class DIAG_STATUS:
+    Not_Tested = const(-1)
+    OK = const(1)
+    FAIL = const(2)
 class diagnostics_class:
     _id = 0
     _name = ""
