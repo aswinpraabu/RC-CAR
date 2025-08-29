@@ -1,5 +1,5 @@
-from CCM_Submodules.global_data import rf_comms_data, controls_data
-from CCM_Submodules.global_data import POWER_MODES
+from CCM_Submodules.global_data import rf_comms_data, controls_data, hw_drivers_data
+from CCM_Submodules.global_data import POWER_MODES, DIAG_STATUS
 from time import ticks_ms, ticks_diff
 from CCM_Submodules.calibrations import CONTROLS_Calibrations as CAL
 
@@ -13,7 +13,14 @@ def initialize():
 
 def motor_control():
     #print(rf_comms_data.rx_validity, controls_data.power_mode)
-    if rf_comms_data.rx_validity and controls_data.power_mode == POWER_MODES.Normal:
+
+    # Check if all conditions are met to enable driving
+    comms_data_check = rf_comms_data.rx_validity
+    power_mode_check = controls_data.power_mode == POWER_MODES.Normal
+    safety_check = hw_drivers_data.battery_voltage_low_critical_diag.get_status() == DIAG_STATUS.OK
+    drive_enable = all([comms_data_check, power_mode_check, safety_check])
+
+    if drive_enable:
         # Update car throttle and turn angle based on received data
         controls_data.car_throttle = rf_comms_data.rx_throttle
         controls_data.car_turn_angle = rf_comms_data.rx_turn_angle
