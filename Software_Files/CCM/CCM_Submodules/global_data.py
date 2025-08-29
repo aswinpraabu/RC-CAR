@@ -37,11 +37,11 @@ class diagnostics_class:
             # if last test was not a fail, set the flag & start the timer
             self._test_fail_start_time = current_time
             self._last_test_fail = True
-        elif self._last_test_fail and self._diag_status != 2:
+        elif self._last_test_fail and self._diag_status != DIAG_STATUS.FAIL:
             # if last test was a fail, check if mature time has passed
             elapsed_time = ticks_diff(current_time, self._test_fail_start_time)
             if elapsed_time >= self._mature_time_ms:
-                self._diag_status = 2
+                self._diag_status = DIAG_STATUS.FAIL
                 print(f"Diag {self._name} (ID: {self._id}) diagnostic status changed to FAIL")
     
     def test_pass(self):
@@ -50,11 +50,11 @@ class diagnostics_class:
             # if last test was a fail, set the flag & start the timer
             self._test_pass_start_time = current_time
             self._last_test_fail = False
-        elif not self._last_test_fail and self._diag_status != 1:
+        elif not self._last_test_fail and self._diag_status != DIAG_STATUS.OK:
             # if last test was a pass, check if demature time has passed
             elapsed_time = ticks_diff(current_time, self._test_pass_start_time)
             if elapsed_time >= self._demature_time_ms:
-                self._diag_status = 1
+                self._diag_status = DIAG_STATUS.OK
                 print(f"Diag {self._name} (ID: {self._id}) diagnostic status changed to OK")
     def reset_status(self):
         self._diag_status = -1
