@@ -1,0 +1,70 @@
+#include <Arduino.h>
+
+//#include <RFM69.h>         //get it here: https://www.github.com/lowpowerlab/rfm69
+//#include <RFM69_ATC.h>     //get it here: https://github.com/lowpowerlab/RFM69
+//#include <SPI.h> 
+
+//****************************************************************************************************************
+//**** IMPORTANT RADIO SETTINGS - YOU MUST CHANGE/CONFIGURE TO MATCH YOUR HARDWARE TRANSCEIVER CONFIGURATION! ****
+//****************************************************************************************************************
+#define NETWORKID     100  //the same on all nodes that talk to each other
+#define RECEIVER      1    //unique ID of the gateway/receiver
+#define SENDER        2
+#define NODEID        RECEIVER  //change to "SENDER" if this is the sender node
+//Match frequency to the hardware version of the radio on your Moteino
+#define FREQUENCY     RF69_433MHZ
+#define IS_RFM69HW_HCW  //uncomment only for RFM69HW/HCW! Leave out if you have RFM69W/CW!
+
+#define RF_SPI_CS PA3
+#define RF_IRQ PA2
+
+//SPIClass spi(PIN_SPI_MOSI,PIN_SPI_MISO,PIN_SPI_SCK,PIN_SPI_SS); //MOSI,MISO,SCK,SS
+
+//RFM69(uint8_t slaveSelectPin=RF69_SPI_CS, uint8_t interruptPin=RF69_IRQ_PIN, bool isRFM69HW_HCW=false, SPIClass *spi=nullptr);
+//RFM69 radio(PIN_SPI_SS, RF_IRQ, true,&spi); //true for RFM69HW/HCW, false for RFM69W/CW
+void myfunc(uint8_t a, uint8_t b);
+//RFM69 radio(RF_SPI_CS,RF_IRQ,true); //true for RFM69HW/HCW, false for RFM69W/CW
+
+
+void setup() {
+	spi.begin();
+	digitalWrite(PIN_SPI_SS, LOW);
+	uint8_t volatile stat = spi.transfer(0x10 & 0x7F);
+	uint8_t volatile regval = spi.transfer(0);
+	digitalWrite(PIN_SPI_SS, HIGH);
+	delay(50);
+
+	// put your setup code here, to run once:
+	bool volatile res = radio.initialize(FREQUENCY,NODEID,NETWORKID);
+	#ifdef IS_RFM69HW_HCW
+	radio.setHighPower(); //must include this only for RFM69HW/HCW!
+	
+	#endif
+	uint8_t volatile temp = radio.readTemperature();
+
+	uint8_t counts = res ? 3 : 5;
+	
+	counts = (temp > 20) && (temp < 35)  ? 3 : 5;
+	
+	pinMode(LED_BUILTIN, OUTPUT);
+	for (uint8_t i = 0; i < counts; i++) {
+		digitalWrite(LED_BUILTIN, HIGH);
+		delay(200);
+		digitalWrite(LED_BUILTIN, LOW);
+		delay(200);
+	}
+}
+
+void loop() {
+	// put your main code here, to run repeatedly:
+
+	digitalWrite(LED_BUILTIN, HIGH);
+	delay(1000);
+	digitalWrite(LED_BUILTIN, LOW);
+	delay(1000);
+}
+
+void myfunc(uint8_t a, uint8_t b) {
+	a = a + b;
+	
+}

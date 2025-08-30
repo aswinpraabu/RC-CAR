@@ -1,0 +1,27 @@
+//#include <Arduino.h>
+
+#include <RH_RF69.h>
+#include <RHReliableDatagram.h>
+
+#include "sensors.h"
+#include "rf_comms.h"
+
+
+void setup() {
+	// put your setup code here, to run once:
+	sensors_init();
+	toggle_status_led(3,300);
+	rf_comms_init();
+
+	toggle_status_led(5,1000);
+}
+
+void loop() {
+	uint8_t loop_start = millis();
+	if (difftime(millis(), loop_start) >= 5){
+		sensors_task_01();
+		rf_comms_task_01();
+		loop_start = millis();
+	}
+
+}

@@ -1,0 +1,109 @@
+#include <Arduino.h>
+
+#include <SPI.h>
+#include <RH_RF69.h>
+#include <RHReliableDatagram.h>
+
+// Change to 434.0 or other frequency, must match RX's freq!
+#define RF69_FREQ 433.0
+#define FROM_ADDRESS 'A'
+#define TO_ADDRESS   'B'
+
+#define RFM69_CS    PA3  //
+//#define RFM69_CS    PIN_SPI_SS  //
+#define RFM69_INT   PA2  //
+#define RFM69_RST   PA11  // "A"
+//#define RFM69_RST   PA1  // "A"
+#define LED        LED_BUILTIN
+
+#define RF_SPI_CS 
+#define RF_IRQ PA2
+
+//SPIClass spi(PIN_SPI_MOSI,PIN_SPI_MISO,PIN_SPI_SCK,PIN_SPI_SS); //MOSI,MISO,SCK,SS
+
+//RFM69(uint8_t slaveSelectPin=RF69_SPI_CS, uint8_t interruptPin=RF69_IRQ_PIN, bool isRFM69HW_HCW=false, SPIClass *spi=nullptr);
+//RFM69 radio(PIN_SPI_SS, RF_IRQ, true,&spi); //true for RFM69HW/HCW, false for RFM69W/CW
+void myfunc(uint8_t counts, uint16_t delayms);
+
+// Singleton instance of the radio driver
+RH_RF69 rf69(RFM69_CS, RFM69_INT);
+
+// Class to manage message delivery and receipt, using the driver declared above
+RHReliableDatagram manager(rf69, FROM_ADDRESS);
+
+uint8_t packetnum = 0;
+
+uint8_t data[] = "Hello World!";
+// Dont put this on the stack:
+uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
+
+
+void setup() {
+	pinMode(LED_BUILTIN, OUTPUT);
+	digitalWrite(LED_BUILTIN, LOW);
+	pinMode(RFM69_RST, OUTPUT);
+	// manual reset
+	digitalWrite(RFM69_RST, HIGH);
+	delay(10);
+	digitalWrite(RFM69_RST, LOW);
+	delay(10);
+
+	if (!manager.init())
+	{
+		//Serial.println("RFM69 radio init failed");
+		myfunc(10,100);
+		while (1);
+	}
+	//Serial.println("RFM69 radio init OK!");
+	myfunc(2,500);
+
+	// Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for low power module)
+	// No encryption
+	if (!rf69.setFrequency(RF69_FREQ))
+	{
+		//Serial.println("setFrequency failed");
+		myfunc(10,100);
+	}
+	myfunc(2,500);
+	
+	// If you are using a high power RF69 eg RFM69HW, you *must* set a Tx power with the
+	// ishighpowermodule flag set like this:
+	rf69.setTxPower(20, true); // range from 14-20 for power, 2nd arg must be true for 69HCW
+	volatile  int tempC = rf69.temperatureRead(); // Read the temperature (is in C);
+	volatile int16_t a = tempC;
+	
+	
+}
+
+void loop() {
+	delay(1000);  // Wait 1 second between transmits, could also 'sleep' here!
+
+	// Now wait for a reply
+	uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
+	uint8_t len = sizeof(buf);
+
+	if (rf69.waitAvailableTimeout(500))  { 
+	// Should be a reply message for us now   
+	if (rf69.recv(buf, &len)) {
+		//Serial.print("Got a reply: ");
+		//Serial.println((char*)buf);
+		myfunc(2,100); //blink LED 3 times, 100ms between blinks
+	} else {
+		//Serial.println("Receive failed");
+		myfunc(5,50);
+	}
+	} else {
+	//Serial.println("No reply, is another RFM69 listening?");
+	//myfunc(3,50);
+	}
+}
+
+void myfunc(uint8_t counts, uint16_t delayms) {
+	for (uint8_t i = 0; i < counts; i++) {
+	digitalWrite(LED_BUILTIN, HIGH);
+	delay(delayms);
+	digitalWrite(LED_BUILTIN, LOW);
+	delay(delayms);
+}
+}
+	
