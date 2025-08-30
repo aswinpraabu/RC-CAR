@@ -23,7 +23,7 @@ class HW_DRIVERS_Class:
     CAL_P_dc_motor_min_power = const(-100)  # Minimum power for DC motor in percentage
     CAL_P_dc_motor_max_power = const(100)  # Maximum power for DC motor in percentage
     CAL_p_dc_motor_reverse_factor = const(50)  # Minimum speed for DC motor in RPM
-    CAL_p_dc_motor_deadzone = const(20)  # Minimum power to overcome motor deadzone in percentage
+    CAL_p_dc_motor_deadzone = const(30)  # Minimum power to overcome motor deadzone in percentage
 
     # INA260 calibration parameters
     CAL_t_ina260_voltage_conversion_time = ConversionTime.TIME_8_244_ms  # Voltage conversion time in ms
