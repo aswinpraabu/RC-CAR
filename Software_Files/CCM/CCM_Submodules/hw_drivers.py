@@ -123,7 +123,7 @@ class DC_Motor:
         else:    
             factor = (self.max_power - CAL.CAL_p_dc_motor_deadzone)/self.max_power 
             power_scaled = abs(power) * factor + CAL.CAL_p_dc_motor_deadzone # Scale power to overcome motor deadzone
-            duty_ns = int((abs(power) * 10000)) # percent to ns
+            duty_ns = int((power_scaled * 10000)) # percent to ns
         return duty_ns
 
 steering_servo = Servo()
