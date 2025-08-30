@@ -103,12 +103,15 @@ class DC_Motor:
         duty_ns = self._power_to_duty_ns(power)
         #print(f"Setting motor power to {power}, duty_ns: {duty_ns}")
 
-        if power >= 0:
+        if power > 0:
             self.forward_pwm.duty_ns(duty_ns)
             self.reverse_pwm.duty_ns(0)
         elif power < 0:
             self.forward_pwm.duty_ns(0)
             self.reverse_pwm.duty_ns(int(duty_ns*CAL.CAL_p_dc_motor_reverse_factor/100)) # Reverse motor at half power
+        else:
+            self.forward_pwm.duty_ns(0)
+            self.reverse_pwm.duty_ns(0)
         
         
     def _power_to_duty_ns(self, power: float) -> int:
@@ -121,8 +124,11 @@ class DC_Motor:
             print(f"power must be between {self.min_power} and {self.max_power}")
             duty_ns = 0
         else:    
+            #TODO this deadzone logic should account for battery voltage and current load
+            # Actual deadzone may increase if battery voltage is low or motor is under load
             factor = (self.max_power - CAL.CAL_p_dc_motor_deadzone)/self.max_power 
             power_scaled = abs(power) * factor + CAL.CAL_p_dc_motor_deadzone # Scale power to overcome motor deadzone
+            #print(f"Power: {power}, Scaled Power: {power_scaled}")
             duty_ns = int((power_scaled * 10000)) # percent to ns
         return duty_ns
 
