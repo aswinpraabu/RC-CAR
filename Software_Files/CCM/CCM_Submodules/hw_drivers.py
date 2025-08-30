@@ -113,7 +113,7 @@ class DC_Motor:
         
     def _power_to_duty_ns(self, power: float) -> int:
         '''
-        Convert power to duty cycle in ns. Period is 1/freqency = 1/1000 = 1ms = 1000000ns
+        Convert power to duty cycle in ns. Period is 1/freqency = 1/1000Hz = 1ms = 1000000ns
         '''
         duty_ns:int = 0
         is_in_range = self.min_power <= power <= self.max_power
@@ -121,6 +121,8 @@ class DC_Motor:
             print(f"power must be between {self.min_power} and {self.max_power}")
             duty_ns = 0
         else:    
+            factor = (self.max_power - CAL.CAL_p_dc_motor_deadzone)/self.max_power 
+            power_scaled = abs(power) * factor + CAL.CAL_p_dc_motor_deadzone # Scale power to overcome motor deadzone
             duty_ns = int((abs(power) * 10000)) # percent to ns
         return duty_ns
 
