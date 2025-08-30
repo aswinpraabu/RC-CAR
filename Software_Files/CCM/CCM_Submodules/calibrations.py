@@ -23,6 +23,8 @@ class HW_DRIVERS_Class:
     CAL_P_dc_motor_min_power = const(-100)  # Minimum power for DC motor in percentage
     CAL_P_dc_motor_max_power = const(100)  # Maximum power for DC motor in percentage
     CAL_p_dc_motor_reverse_factor = const(50)  # Minimum speed for DC motor in RPM
+    
+    # Based on testing with battery at ~11v, 30% power is needed to reliably overcome motor deadzone
     CAL_p_dc_motor_deadzone = const(30)  # Minimum power to overcome motor deadzone in percentage
 
     # INA260 calibration parameters
