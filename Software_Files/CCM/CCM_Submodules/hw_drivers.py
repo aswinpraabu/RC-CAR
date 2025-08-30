@@ -100,15 +100,17 @@ class DC_Motor:
         self.max_power = 100  # Maximum power
     def set_power(self, power):
         # Set the power of the motor
-        duty_ns = self._power_to_duty_ns(power)
+        
         #print(f"Setting motor power to {power}, duty_ns: {duty_ns}")
 
         if power > 0:
+            duty_ns = self._power_to_duty_ns(power)
             self.forward_pwm.duty_ns(duty_ns)
             self.reverse_pwm.duty_ns(0)
         elif power < 0:
+            duty_ns = self._power_to_duty_ns(power*CAL.CAL_p_dc_motor_reverse_factor/100)
             self.forward_pwm.duty_ns(0)
-            self.reverse_pwm.duty_ns(int(duty_ns*CAL.CAL_p_dc_motor_reverse_factor/100)) # Reverse motor at half power
+            self.reverse_pwm.duty_ns(int(duty_ns)) # Reverse motor at half power
         else:
             self.forward_pwm.duty_ns(0)
             self.reverse_pwm.duty_ns(0)
