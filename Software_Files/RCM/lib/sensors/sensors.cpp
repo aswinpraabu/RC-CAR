@@ -43,6 +43,13 @@ void update_turn_angle() {
 void update_throttle() {
 	volatile uint32_t pot_adc = analogRead(THROTTLE_POT_PIN);
 	float throttle_raw  = (pot_adc * 200.0 / 1023.0); // map 0-1023 to 0-100%
-	float throttle = throttle_raw - 100.0; // map 0-100% to -50 to +50
+	throttle_raw = throttle_raw - 100.0; // map 0-100% to -50 to +50
+	float throttle = abs(throttle_raw)>10? abs((throttle_raw)-10)*10/9 : 0; // map 0-50% to 0-100%
+	if (throttle_raw>=0) {
+		throttle = throttle; // forward 0-100%
+	} else {
+		throttle = -throttle; // reverse 0 to -100%
+	}
+
 	sensors_data.throttle = throttle;
 }
