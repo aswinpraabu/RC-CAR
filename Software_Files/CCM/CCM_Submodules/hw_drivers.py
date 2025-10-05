@@ -185,7 +185,7 @@ def led_control():
 
 def motor_control():
 
-    steering_servo.set_angle(controls_data.car_turn_angle)
+    #steering_servo.set_angle(controls_data.car_turn_angle)
     propulsion_motor.set_power(controls_data.car_throttle)
     #print(f"Steering angle: {controls_data.car_turn_angle}, Motor power: {controls_data.car_throttle}")
 
