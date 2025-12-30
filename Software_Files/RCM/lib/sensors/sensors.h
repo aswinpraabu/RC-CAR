@@ -3,19 +3,15 @@
 
 
 
-#define STATUS_LED LED_BUILTIN
+#define STATUS_LED PB10 // LED1
 #define TURN_POT_PIN PA0 // potentiometer pin for Turn Angle input
-#define THROTTLE_POT_PIN PA1 // potentiometer pin for Throttle input
+#define THROTTLE_POT_PIN PA3 // potentiometer pin for Throttle input
 
 
-#define RFM69_CS    PA3  //
+#define RFM69_CS    PB8  // b8
 //#define RFM69_CS    PIN_SPI_SS  //
-#define RFM69_INT   PA2  //
+#define RFM69_INT   PB9  // b9
 #define RFM69_RST   PA11  // "A"
-
-#define RF_SPI_CS 
-#define RF_IRQ PA2
-
 
 
 struct SensorsData {
