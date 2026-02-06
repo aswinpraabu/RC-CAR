@@ -37,7 +37,7 @@ void update_turn_angle() {
 	volatile uint32_t pot_adc = analogRead(TURN_POT_PIN);
 	volatile int8_t pot = (int8_t)(pot_adc*180.0 / 1023.0); // assuming 10-bit ADC
 	volatile int8_t angle = pot - 90; // map 0-180 to -90 to +90
-	sensors_data.turn_angle = angle;
+	sensors_data.turn_angle = -angle;
 }
 
 void update_throttle() {
