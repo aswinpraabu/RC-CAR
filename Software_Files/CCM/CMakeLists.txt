@@ -53,12 +53,17 @@ target_include_directories(CCM PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
+add_subdirectory(lib)
+
 # Add any user requested libraries
 target_link_libraries(CCM 
         hardware_spi
         hardware_i2c
         hardware_timer
         
+        pico_cyw43_arch_none
+        hw_drivers
+        rf_comms
         )
 
 pico_add_extra_outputs(CCM)
