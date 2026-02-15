@@ -1,1 +1,4 @@
 
+[submodule "Software_Files/CCM/lib/submodules/RFM69"]
+	path = Software_Files/CCM/lib/submodules/RFM69
+	url = https://github.com/aswinpraabu/RFM69.git
