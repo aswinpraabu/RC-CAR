@@ -11,6 +11,10 @@ void RFM69_SetCSPin(bool value)
     gpio_put(RFM69_CS_PIN, !value); // Active LOW
 }
 bool RFM69_ReadDIO0Pin(void);       // function to read GPIO connected to RFM69 DIO0 (RFM69 interrupt signalling)
+bool RFM69_ReadDIO0Pin(void)
+{
+    return gpio_get(RFM69_DIO0_PIN);
+}
 uint8_t SPI_transfer8(uint8_t);     // function to transfer 1byte on SPI with readback
 void Serialprint(char*);            // function to print to serial port a string
 bool Timeout_IsTimeout1(void);      // function for timeout handling, checks if previously set timeout expired

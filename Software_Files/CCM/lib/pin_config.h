@@ -18,5 +18,6 @@
 #define RFM69_SCK_PIN 18
 #define RFM69_CS_PIN 17
 #define RFM69_RESET_PIN 20
+#define RFM69_DIO0_PIN 22
 
 #endif // PIN_CONFIG_H
