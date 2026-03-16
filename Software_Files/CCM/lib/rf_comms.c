@@ -16,6 +16,12 @@ bool RFM69_ReadDIO0Pin(void)
     return gpio_get(RFM69_DIO0_PIN);
 }
 uint8_t SPI_transfer8(uint8_t);     // function to transfer 1byte on SPI with readback
-void Serialprint(char*);            // function to print to serial port a string
+
+// function to print to serial port a string
+void Serialprint(char* printf_str)
+{
+    printf("%s\n", printf_str);
+}
+
 bool Timeout_IsTimeout1(void);      // function for timeout handling, checks if previously set timeout expired
 void Timeout_SetTimeout1(uint16_t); // function for timeout handling, sets a timeout, parameter is in milliseconds (ms)
