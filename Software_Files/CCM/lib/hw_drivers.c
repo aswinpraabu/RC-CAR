@@ -84,6 +84,10 @@ void INA260_init(uint8_t i2caddr) {
 }
 #pragma endregion INA260_REGION
 
+#pragma region RFM69_REGION
+
+#pragma endregion RFM69_REGION
+
 
 void hw_drivers_init(void) {
     int rc = pico_led_init();

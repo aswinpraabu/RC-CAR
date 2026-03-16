@@ -5,6 +5,7 @@
 #include "pin_config.h"
 #include "hardware/pwm.h"
 #include "ina260_sensor.h"
+#include "hardware/spi.h"
 
 // Pico W devices use a GPIO on the WIFI chip for the LED,
 // so when building for Pico W, CYW43_WL_GPIO_LED_PIN will be defined
@@ -35,6 +36,8 @@ void servo_angle_to_duty_ns(int8_t angle);
 
 #define INA260_ADDR 0x40
 void INA260_init(uint8_t i2caddr);
+
+
 
 int pico_led_init(void);
 void pico_set_led(bool led_on);
