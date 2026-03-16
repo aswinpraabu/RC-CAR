@@ -29,5 +29,18 @@ void Serialprint(char* printf_str)
     printf("%s\n", printf_str);
 }
 
-bool Timeout_IsTimeout1(void);      // function for timeout handling, checks if previously set timeout expired
-void Timeout_SetTimeout1(uint16_t); // function for timeout handling, sets a timeout, parameter is in milliseconds (ms)
+void Timeout_SetTimeout1(uint16_t timeout_ms) // function for timeout handling, sets a timeout, parameter is in milliseconds (ms)
+{
+    RFM69_timer_expired = false;
+    add_alarm_in_ms(timeout_ms,_RFM69_timer_callback, NULL, false);
+}
+bool Timeout_IsTimeout1(void)      // function for timeout handling, checks if previously set timeout expired
+{
+    return RFM69_timer_expired;
+}
+
+int64_t _RFM69_timer_callback(alarm_id_t id, __unused void *user_data) 
+{
+    RFM69_timer_expired = true;
+    return 0;
+}
