@@ -1,6 +1,9 @@
 
 #include "rf_comms.h"
 
+volatile uint32_t core0_interrupts; // variable to save and restore interrupts state RFM69 moduled
+
+volatile bool RFM69_timer_expired; // variable to signal timeout expiration to RFM69 module
 
 // module interface, platform specific
 void noInterrupts()                // function to disable interrupts
@@ -14,7 +17,7 @@ void interrupts()                  // function to enable interrupts
 // function to control the GPIO tied to RFM69 chip select (parameter HIGH or LOW)
 void RFM69_SetCSPin(bool value)
 {
-    gpio_put(RFM69_CS_PIN, !value); // Active LOW
+    gpio_put(RFM69_CS_PIN, value); // Active LOW
 }
 // function to read GPIO connected to RFM69 DIO0 (RFM69 interrupt signalling)
 bool RFM69_ReadDIO0Pin(void)
@@ -28,7 +31,7 @@ uint8_t SPI_transfer8(uint8_t data)     // function to transfer 1byte on SPI wit
     return result;
 }
 
-void RFM69_SPI_init(void) 
+void rfm69_SPI_init(void) 
 {
     // Initialize SPI for RFM69 communication
     spi_init(spi0, 1000*1000); // Initialize SPI at 1MHz
@@ -65,9 +68,43 @@ int64_t _RFM69_timer_callback(alarm_id_t id, __unused void *user_data)
     return 0;
 }
 
+void rfm69_gpio0_interupt_callback(uint gpio, uint32_t events) {
+    if (gpio == RFM69_DIO0_PIN && (events & GPIO_IRQ_EDGE_RISE)) {
+        RFM69_isr0();
+    }
+}
+
+void rfm69_device_init()
+{
+    // Initialize RFM69 device
+    RFM69_initialize(RF69_433MHZ,CCM_NODE_ADDR,NETWORK_ID);
+    RFM69_setHighPower(true);
+    gpio_set_irq_enabled_with_callback(RFM69_DIO0_PIN, GPIO_IRQ_EDGE_RISE, true, rfm69_gpio0_interupt_callback);
+
+
+
+}
+
 
 void rf_comms_init(void)
 {
-    RFM69_SPI_init();
-    // Additional initialization code for RFM69 can be added here
+    printf("Initializing RF Communications...\n");
+    rfm69_SPI_init();
+    
+    rfm69_device_init();
+
+
+
+}
+
+
+void rf_comms_task_005ms(void)
+{
+    // Check for received packets
+    if (RFM69_receiveDone()) {
+        printf("Received packet from node %d: %d\n", RFM69_getSenderID(), RFM69_getDataLen());
+    }
+    else {
+        printf("No packet received.\n");
+    }
 }

@@ -84,10 +84,6 @@ void INA260_init(uint8_t i2caddr) {
 }
 #pragma endregion INA260_REGION
 
-#pragma region RFM69_REGION
-
-#pragma endregion RFM69_REGION
-
 
 void hw_drivers_init(void) {
     int rc = pico_led_init();
@@ -109,5 +105,5 @@ void hw_drivers_task_100ms(void) {
     //uint16_t dummy = _INA260_readRegister(INA260_REG_MFG_UID); // Dummy read to keep I2C active
     uint16_t voltage = INA260_readBusVoltage_mV();
     int16_t current = INA260_readCurrent_mA();
-    printf("INA260 Voltage: %u mV, Current: %d mA\n", voltage, current);
+    //printf("INA260 Voltage: %u mV, Current: %d mA\n", voltage, current);
 }

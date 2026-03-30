@@ -13,6 +13,7 @@
 void initialize_system(void) {
     stdio_init_all();
     hw_drivers_init();
+    //rf_comms_init();
 }
 
 void task_005ms(void) {
@@ -55,15 +56,27 @@ int main() {
 
 
         }
-        if(absolute_time_diff_us(debug_task_time, get_absolute_time()) >= 2*1000000) {
+        if(absolute_time_diff_us(debug_task_time, get_absolute_time()) >= 3*1000*1000) {
             pico_set_led(led_state);
             led_state = !led_state;
 
-            //printf("Hello, world!\n");
+            printf("Hello, world!\n");
 
             //servo_set_angle(90 * (led_state ? 1 : -1));
-
+            //rf_comms_task_005ms();
             debug_task_time = get_absolute_time();
+            //rf_comms_init(); // Re-initialize RF communications every 2 seconds for testing
+            //uint32_t temp = 0;//RFM69_readTemperature(1); // Read frequency for testing
+            //RFM69_setNetwork(0x1234); // Set network ID for testing
+            //uint32_t frequency = RFM69_readReg(0x2F); // Read frequency for testing
+            //RFM69_readReg(0x30); // Read frequency for testing
+            //RFM69_readReg(0x14); // Read frequency for testing
+            //RFM69_readReg(0x15); // Read frequency for testing
+
+            //RFM69_readRSSI(0); // Read frequency for testing
+            //RFM69_writeReg(0x24, 0x12); // Write frequency for testing
+            //RFM69_readReg(0x01); // Read frequency for testing
+            //printf("Temperature: %d C, Frequency: %X Hz\n", temp, frequency);
         }
     }
 }

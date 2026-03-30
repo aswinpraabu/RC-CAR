@@ -35,7 +35,8 @@ void rf_comms_init(){
             toggle_status_led(10,1000);
         }
 	}
-
+	u_int16_t network_id = 0x1010;
+	rf69.setSyncWords((uint8_t*)&network_id,2);
 	//Serial.println("RFM69 radio init OK!");
 	//toggle_status_led(2,500);
 
