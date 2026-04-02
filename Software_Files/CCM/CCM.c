@@ -61,11 +61,13 @@ int main() {
             pico_set_led(led_state);
             led_state = !led_state;
 
-            printf("Hello, world!\n");
+            rf_comms_task_debug(); // Call debug task to print received data every 3 seconds
+
 
             //servo_set_angle(90 * (led_state ? 1 : -1));
-            //rf_comms_task_005ms();
+            
             debug_task_time = get_absolute_time();
+
             //rf_comms_init(); // Re-initialize RF communications every 2 seconds for testing
             //uint32_t temp = 0;//RFM69_readTemperature(1); // Read frequency for testing
             //RFM69_setNetwork(0x1234); // Set network ID for testing

@@ -90,7 +90,7 @@ void rfm69_gpio0_interrupt_callback(uint gpio, uint32_t events) {
 
 void rfm69_device_init()
 {
-gpio_init(RFM69_RESET_PIN);
+    gpio_init(RFM69_RESET_PIN);
     gpio_set_dir(RFM69_RESET_PIN, GPIO_OUT);
     rfm69_reset();
     // Initialize RFM69 device
