@@ -34,7 +34,7 @@ uint8_t SPI_transfer8(uint8_t data)     // function to transfer 1byte on SPI wit
 void rfm69_SPI_init(void) 
 {
     // Initialize SPI for RFM69 communication
-    spi_init(spi0, 1000*1000); // Initialize SPI at 1MHz
+    spi_init(spi0, 5000*1000); // Initialize SPI at 5MHz
     gpio_set_function(RFM69_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(RFM69_MOSI_PIN, GPIO_FUNC_SPI);
     gpio_set_function(RFM69_MISO_PIN, GPIO_FUNC_SPI);
@@ -70,6 +70,8 @@ int64_t _RFM69_timer_callback(alarm_id_t id, __unused void *user_data)
     RFM69_timer_expired = true;
     return 0;
 }
+
+//TODO [RC-131] Move this function inside RFM69.c. And call it during initialization.
 
 void rfm69_reset() {
     // Reset RFM69 module by toggling the reset pin
