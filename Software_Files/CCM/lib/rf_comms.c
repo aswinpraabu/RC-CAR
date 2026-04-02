@@ -68,6 +68,15 @@ int64_t _RFM69_timer_callback(alarm_id_t id, __unused void *user_data)
     return 0;
 }
 
+void rfm69_reset() {
+    // Reset RFM69 module by toggling the reset pin
+
+    gpio_put(RFM69_RESET_PIN, true); // Set reset low
+    sleep_us(100); // Hold reset for 100ms
+    gpio_put(RFM69_RESET_PIN, false); // Set reset high
+    sleep_ms(5); // Wait for module to stabilize after reset
+}
+
 void rfm69_gpio0_interupt_callback(uint gpio, uint32_t events) {
     if (gpio == RFM69_DIO0_PIN && (events & GPIO_IRQ_EDGE_RISE)) {
         RFM69_isr0();
@@ -76,6 +85,9 @@ void rfm69_gpio0_interupt_callback(uint gpio, uint32_t events) {
 
 void rfm69_device_init()
 {
+gpio_init(RFM69_RESET_PIN);
+    gpio_set_dir(RFM69_RESET_PIN, GPIO_OUT);
+    rfm69_reset();
     // Initialize RFM69 device
     RFM69_initialize(RF69_433MHZ,CCM_NODE_ADDR,NETWORK_ID);
     RFM69_setHighPower(true);
