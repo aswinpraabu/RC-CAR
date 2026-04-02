@@ -124,6 +124,6 @@ void rf_comms_task_005ms(void)
         printf("Received packet from node %d: %d\n", RFM69_getSenderID(), RFM69_getDataLen());
     }
     else {
-        printf("No packet received.\n");
+        //printf("No packet received.\n");
     }
 }
