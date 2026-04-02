@@ -77,7 +77,7 @@ void rfm69_reset() {
     sleep_ms(5); // Wait for module to stabilize after reset
 }
 
-void rfm69_gpio0_interupt_callback(uint gpio, uint32_t events) {
+void rfm69_gpio0_interrupt_callback(uint gpio, uint32_t events) {
     if (gpio == RFM69_DIO0_PIN && (events & GPIO_IRQ_EDGE_RISE)) {
         RFM69_isr0();
     }
