@@ -45,7 +45,10 @@ void rfm69_SPI_init(void)
     //bi_decl(bi_4pins_with_func(RFM69_MISO_PIN, RFM69_MOSI_PIN, RFM69_SCK_PIN, RFM69_CS_PIN, GPIO_FUNC_SPI));
 
 }
-
+void RFM69_delay_us(uint16_t us)           // function to delay for a specified number of microseconds (us)    
+{
+    sleep_us(us);
+}
 // function to print to serial port a string
 void Serialprint(char* printf_str)
 {
