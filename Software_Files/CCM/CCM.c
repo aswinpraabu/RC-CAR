@@ -13,10 +13,11 @@
 void initialize_system(void) {
     stdio_init_all();
     hw_drivers_init();
-    //rf_comms_init();
+    rf_comms_init();
 }
 
 void task_005ms(void) {
+    rf_comms_task_005ms();
     
 }
 void task_010ms(void) {
