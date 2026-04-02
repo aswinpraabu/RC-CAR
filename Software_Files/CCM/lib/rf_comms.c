@@ -129,3 +129,11 @@ void rf_comms_task_005ms(void)
         //printf("No packet received.\n");
     }
 }
+
+void rf_comms_task_debug(void)
+{
+    // Debug task to print received data
+    if (rxdata) {
+        printf("Received data: %d, %d, %d, %d, %d, %d\n", rxdata[0], rxdata[1], rxdata[2], rxdata[3], rxdata[4], rxdata[5]);
+    }
+}
