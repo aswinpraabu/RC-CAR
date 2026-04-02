@@ -4,7 +4,7 @@
 volatile uint32_t core0_interrupts; // variable to save and restore interrupts state RFM69 moduled
 
 volatile bool RFM69_timer_expired; // variable to signal timeout expiration to RFM69 module
-
+volatile uint8_t *rxdata; // buffer to hold received data from RFM69 module
 // module interface, platform specific
 void noInterrupts()                // function to disable interrupts
 {
@@ -121,7 +121,9 @@ void rf_comms_task_005ms(void)
 {
     // Check for received packets
     if (RFM69_receiveDone()) {
-        printf("Received packet from node %d: %d\n", RFM69_getSenderID(), RFM69_getDataLen());
+        //printf("Received packet from node %d: %d\n", RFM69_getSenderID(), RFM69_getDataLen());
+        rxdata = RFM69_getData();
+
     }
     else {
         //printf("No packet received.\n");
