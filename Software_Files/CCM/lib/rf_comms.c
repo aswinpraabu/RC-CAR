@@ -91,7 +91,11 @@ gpio_init(RFM69_RESET_PIN);
     // Initialize RFM69 device
     RFM69_initialize(RF69_433MHZ,CCM_NODE_ADDR,NETWORK_ID);
     RFM69_setHighPower(true);
-    gpio_set_irq_enabled_with_callback(RFM69_DIO0_PIN, GPIO_IRQ_EDGE_RISE, true, rfm69_gpio0_interupt_callback);
+    gpio_init(RFM69_DIO0_PIN);
+    gpio_set_dir(RFM69_DIO0_PIN, GPIO_IN);
+    gpio_set_pulls(RFM69_DIO0_PIN, false, true); // Enable pull-up on DIO0 pin
+    gpio_set_irq_enabled_with_callback(RFM69_DIO0_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &rfm69_gpio0_interrupt_callback);
+    
 
 
 
