@@ -31,20 +31,6 @@ uint8_t SPI_transfer8(uint8_t data)     // function to transfer 1byte on SPI wit
     return result;
 }
 
-void rfm69_SPI_init(void) 
-{
-    // Initialize SPI for RFM69 communication
-    spi_init(spi0, 5000*1000); // Initialize SPI at 5MHz
-    gpio_set_function(RFM69_SCK_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(RFM69_MOSI_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(RFM69_MISO_PIN, GPIO_FUNC_SPI);
-    gpio_init(RFM69_CS_PIN);
-    gpio_set_dir(RFM69_CS_PIN, GPIO_OUT);
-    gpio_put(RFM69_CS_PIN, true); // Set CS high (inactive)
-
-    //bi_decl(bi_4pins_with_func(RFM69_MISO_PIN, RFM69_MOSI_PIN, RFM69_SCK_PIN, RFM69_CS_PIN, GPIO_FUNC_SPI));
-
-}
 void RFM69_delay_us(uint16_t us)           // function to delay for a specified number of microseconds (us)    
 {
     sleep_us(us);
@@ -75,7 +61,7 @@ int64_t _RFM69_timer_callback(alarm_id_t id, __unused void *user_data)
 
 void rfm69_reset() {
     // Reset RFM69 module by toggling the reset pin
-
+    
     gpio_put(RFM69_RESET_PIN, true); // Set reset low
     sleep_us(100); // Hold reset for 100ms
     gpio_put(RFM69_RESET_PIN, false); // Set reset high
@@ -86,6 +72,21 @@ void rfm69_gpio0_interrupt_callback(uint gpio, uint32_t events) {
     if (gpio == RFM69_DIO0_PIN && (events & GPIO_IRQ_EDGE_RISE)) {
         RFM69_isr0();
     }
+}
+
+void rfm69_SPI_init(void) 
+{
+    // Initialize SPI for RFM69 communication
+    spi_init(spi0, 5000*1000); // Initialize SPI at 5MHz
+    gpio_set_function(RFM69_SCK_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(RFM69_MOSI_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(RFM69_MISO_PIN, GPIO_FUNC_SPI);
+    gpio_init(RFM69_CS_PIN);
+    gpio_set_dir(RFM69_CS_PIN, GPIO_OUT);
+    gpio_put(RFM69_CS_PIN, true); // Set CS high (inactive)
+
+    //bi_decl(bi_4pins_with_func(RFM69_MISO_PIN, RFM69_MOSI_PIN, RFM69_SCK_PIN, RFM69_CS_PIN, GPIO_FUNC_SPI));
+
 }
 
 void rfm69_device_init()
