@@ -5,6 +5,7 @@
 #include "hardware/timer.h"
 #include "hardware/uart.h"
 
+#include "global_data.h"
 #include "hw_drivers.h"
 #include "rf_comms.h"
 

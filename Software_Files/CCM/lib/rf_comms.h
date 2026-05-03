@@ -7,6 +7,8 @@
 #include "hardware/sync.h"
 #include "hardware/spi.h"
 
+#include "global_data.h"
+
 #define CCM_NODE_ADDR 0x11
 #define RCM_NODE_ADDR 0x22
 #define NETWORK_ID 0xD42D

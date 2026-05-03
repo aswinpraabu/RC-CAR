@@ -1,5 +1,7 @@
 
 #include "rf_comms.h"
+struct rf_comms_data global_rf_comms_data;
+
 
 volatile uint32_t core0_interrupts; // variable to save and restore interrupts state RFM69 moduled
 
