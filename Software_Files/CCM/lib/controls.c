@@ -2,14 +2,6 @@
 
 struct controls_data global_controls_data;
 
-void controls_init(void)
-{
-    global_controls_data.car_throttle = 0;
-    global_controls_data.car_turn_angle = 0;
-    global_controls_data.led1_bat_low = false;
-    global_controls_data.led2_loc_rcm = false;
-    global_controls_data.ccm_power_state = CCM_POWERSTATE_RUNNING;
-}
 
 void motor_control(void)
 {
@@ -36,6 +28,16 @@ void power_control(void)
 void warning_lights_control(void)
 {
     // Placeholder for warning lights control logic
+}
+
+
+void controls_init(void)
+{
+    global_controls_data.car_throttle = 0;
+    global_controls_data.car_turn_angle = 0;
+    global_controls_data.led1_bat_low = false;
+    global_controls_data.led2_loc_rcm = false;
+    global_controls_data.ccm_power_state = CCM_POWERSTATE_RUNNING;
 }
 
 void controls_task_005ms(void)
