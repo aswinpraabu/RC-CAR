@@ -76,6 +76,51 @@ void rfm69_gpio0_interrupt_callback(uint gpio, uint32_t events) {
     }
 }
 
+void rf_receive()
+{
+        // Check for received packets
+    if (RFM69_receiveDone()) {
+        //printf("Received packet from node %d: %d\n", RFM69_getSenderID(), RFM69_getDataLen());
+        rxdata = RFM69_getData();
+        uint8_t data_len = RFM69_getDataLen();
+        uint8_t msg_id = rxdata[0]; // the first byte of the data is the message ID
+        switch (msg_id)
+        {
+        case 0x0A:
+            decode_msg_0x0A_PropulsionCtrl(rxdata);
+            break;
+        case 0x0B:        
+            /* code */
+            break;
+        default:
+            break;
+        }
+
+    }
+}
+
+void decode_msg_0x0A_PropulsionCtrl(volatile uint8_t *raw_data) {
+    // Implementation for decoding Propulsion Control message
+    /*
+        Decodes a received packet into its components.
+    Raw Data format: [TURN_ANGLE_RAW, THROTTLE_RAW, SHUTDOWN_CMD]\n
+    turn_angle = TURN_ANGLE_RAW - 90\n
+    throttle = THROTTLE_RAW - 100\n
+    shutdown_flag = True if SHUTDOWN_CMD==0xAB else False\n
+    **Returns**:
+    -   turn_angle (int): degrees
+    -   throttle (int): percentage
+    -   decode_result (bool): True if packet is valid, False otherwise
+    */
+    int8_t turn_angle = (int8_t)(raw_data[1]) - 90;
+    int8_t throttle = (int8_t)(raw_data[2]) - 100;
+    global_rf_comms_data.rx_turn_angle = turn_angle;
+    global_rf_comms_data.rx_throttle = throttle;
+    
+
+    //uint8_t shutdown_flag = decode_Shutdown(raw_data[2]) & 0xff;  // Decode shutdown command
+}
+
 void rfm69_SPI_init(void) 
 {
     // Initialize SPI for RFM69 communication
@@ -124,21 +169,15 @@ void rf_comms_init(void)
 
 void rf_comms_task_005ms(void)
 {
-    // Check for received packets
-    if (RFM69_receiveDone()) {
-        //printf("Received packet from node %d: %d\n", RFM69_getSenderID(), RFM69_getDataLen());
-        rxdata = RFM69_getData();
 
-    }
-    else {
-        //printf("No packet received.\n");
-    }
+    rf_receive();
 }
 
 void rf_comms_task_debug(void)
 {
     // Debug task to print received data
     if (rxdata) {
-        printf("Received data: %d, %d, %d, %d, %d, %d\n", rxdata[0], rxdata[1], rxdata[2], rxdata[3], rxdata[4], rxdata[5]);
+        //printf("Received data: %d, %d, %d, %d, %d, %d\n", rxdata[0], rxdata[1], rxdata[2], rxdata[3], rxdata[4], rxdata[5]);
+        //printf("---------- RF COMMS DATA   : Turn Angle = %d, Throttle = %d\n", global_rf_comms_data.rx_turn_angle, global_rf_comms_data.rx_throttle);
     }
 }

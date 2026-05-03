@@ -18,6 +18,7 @@
 // internal function
 int64_t _RFM69_timer_callback(alarm_id_t id, __unused void *user_data);
 
+
 void rfm69_SPI_init(void);
 void rfm69_device_init(void);
 void rfm69_gpio0_interrupt_callback(uint gpio, uint32_t events);
@@ -28,5 +29,7 @@ void rf_comms_task_005ms(void);
 void rf_comms_task_010ms(void);
 void rf_comms_task_100ms(void);
 void rf_comms_task_debug(void);
+
+void decode_msg_0x0A_PropulsionCtrl(volatile uint8_t *raw_data);
 
 #endif // RF_COMMS_H
