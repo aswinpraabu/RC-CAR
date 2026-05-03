@@ -64,6 +64,7 @@ target_link_libraries(CCM
         pico_cyw43_arch_none
         hw_drivers
         rf_comms
+        controls
         )
 
 pico_add_extra_outputs(CCM)

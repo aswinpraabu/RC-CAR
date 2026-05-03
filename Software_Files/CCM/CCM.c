@@ -8,19 +8,23 @@
 #include "global_data.h"
 #include "hw_drivers.h"
 #include "rf_comms.h"
+#include "controls.h"
 
 
 void initialize_system(void) {
     stdio_init_all();
     hw_drivers_init();
     rf_comms_init();
+    controls_init();
 }
 
 void task_005ms(void) {
     rf_comms_task_005ms();
+    controls_task_005ms();
     
 }
 void task_010ms(void) {
+    controls_task_010ms();
     
 }
 void task_100ms(void) {
