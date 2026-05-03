@@ -1,6 +1,27 @@
 #include "hw_drivers.h"
 
 
+/**
+ * @brief Initialize the servo motor by configuring the PWM hardware and setting the initial position.
+ * @note
+ * `SERVO_PWM_CLK_HZ` - This is the frequency of the clock driving the PWM hardware. 
+
+ * `SERVO_FREQ` - This is the frequency of the actual PWM signal sent to the servo. A common value for hobby servos is 50Hz (20ms period).
+ * 
+ * `SYS_CLK_HZ` - This is the frequency of the system clock. 
+ * 
+ * To achieve a specific PWM frequency, we need to set the PWM clock divider and the wrap value appropriately.
+ * 
+ * The pwm clock will count up at a rate of `SERVO_PWM_CLK_HZ`, and reset to 0 after it reaches the wrap value set by `pwm_set_wrap`. 
+ * To achieve a PWM signal of frequency `SERVO_FREQ`, we need the period of the PWM signal (in seconds) to be the inverse of `SERVO_FREQ`,
+ * which means the number of clock cycles in one period should be `SERVO_PWM_CLK_HZ / SERVO_FREQ`. 
+ * Therefore, we set the wrap value to `SERVO_PWM_CLK_HZ / SERVO_FREQ - 1` (subtracting 1 because the count starts at 0).
+ * 
+ * The system clock is divided down with `pwm_set_clkdiv`
+ * The PWM Period is set with `pwm_set_wrap`. The period clock cycles
+ * The duty cycle is set with `pwm_set_gpio_level`, which sets the number of clock cycles the signal is high for.
+ * 
+ */
 void servo_init(void) {
     // Initialize PWM for servo control
     pwm_config config = pwm_get_default_config();
@@ -9,7 +30,13 @@ void servo_init(void) {
 
     gpio_set_function(SERVO_PIN, GPIO_FUNC_PWM);
     
+    /*
+        * Divider calculated from:
+        * Final clock frequency = system clock frequency / divider
+        * 
+    */
     pwm_set_clkdiv(slice_num, SYS_CLK_HZ / SERVO_PWM_CLK_HZ);
+
     pwm_set_wrap(slice_num, SERVO_PWM_CLK_HZ / SERVO_FREQ - 1); // Set wrap value based on frequency
 
     servo_set_angle(0); // Set to neutral position
@@ -30,6 +57,12 @@ void servo_set_angle(int8_t angle) {
     //printf("Servo angle set to %d degrees (duty cycle: %u, duty_ms: %f)\n", angle, duty_cycle, duty_ms);
 }
 
+#pragma region DC_Motor
+
+/**
+ * @brief Initialize GPIO pins for DC motor control and set up PWM for motor speed control.
+ * 
+ */
 void dc_motor_init(void) {
     // Initialize GPIO for DC motor control
     uint8_t motor_fwd_pin_channel = pwm_gpio_to_channel(MOTOR_FWD_PIN);
@@ -50,6 +83,12 @@ void dc_motor_init(void) {
     pwm_set_enabled(motor_rev_pin_channel, true);
 }
 
+
+/**
+ * @brief drive the motor based on power percentage
+ * @param power Power level as a percentage (-100 to 100)
+ * Positive power values correspond to forward motion, negative values correspond to reverse motion.
+ */
 void dc_motor_set_power(int8_t power) {
     // Constrain power to valid range
     if (power < -100) power = -100;
