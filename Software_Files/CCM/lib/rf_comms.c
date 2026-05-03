@@ -116,6 +116,7 @@ void decode_msg_0x0A_PropulsionCtrl(volatile uint8_t *raw_data) {
     int8_t throttle = (int8_t)(raw_data[2]) - 100;
     global_rf_comms_data.rx_turn_angle = turn_angle;
     global_rf_comms_data.rx_throttle = throttle;
+    global_rf_comms_data.rx_validity_flag = true; // Set validity flag to true after successful decoding
     
 
     //uint8_t shutdown_flag = decode_Shutdown(raw_data[2]) & 0xff;  // Decode shutdown command

@@ -65,22 +65,22 @@ void servo_set_angle(int8_t angle) {
  */
 void dc_motor_init(void) {
     // Initialize GPIO for DC motor control
-    uint8_t motor_fwd_pin_channel = pwm_gpio_to_channel(MOTOR_FWD_PIN);
-    uint8_t motor_rev_pin_channel = pwm_gpio_to_channel(MOTOR_REV_PIN);
+    uint8_t motor_fwd_pin_slice_num = pwm_gpio_to_slice_num(MOTOR_FWD_PIN);
+    uint8_t motor_rev_pin_slice_num = pwm_gpio_to_slice_num(MOTOR_REV_PIN);
 
     gpio_set_function(MOTOR_FWD_PIN, GPIO_FUNC_PWM);
     gpio_set_function(MOTOR_REV_PIN, GPIO_FUNC_PWM);
 
-    pwm_set_clkdiv(motor_fwd_pin_channel, SYS_CLK_HZ / MOTOR_PWM_CLK_HZ);
-    pwm_set_clkdiv(motor_rev_pin_channel, SYS_CLK_HZ / MOTOR_PWM_CLK_HZ);
+    pwm_set_clkdiv(motor_fwd_pin_slice_num, SYS_CLK_HZ / MOTOR_PWM_CLK_HZ);
+    pwm_set_clkdiv(motor_rev_pin_slice_num, SYS_CLK_HZ / MOTOR_PWM_CLK_HZ);
 
-    pwm_set_wrap(motor_fwd_pin_channel, MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ - 1); // Set wrap value based on frequency
-    pwm_set_wrap(motor_rev_pin_channel, MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ - 1); // Set wrap value based on frequency
+    pwm_set_wrap(motor_fwd_pin_slice_num, MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ - 1); // Set wrap value based on frequency
+    pwm_set_wrap(motor_rev_pin_slice_num, MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ - 1); // Set wrap value based on frequency
 
     dc_motor_set_power(0); // Set to neutral position
     
-    pwm_set_enabled(motor_fwd_pin_channel, true);
-    pwm_set_enabled(motor_rev_pin_channel, true);
+    pwm_set_enabled(motor_fwd_pin_slice_num, true);
+    pwm_set_enabled(motor_rev_pin_slice_num, true);
 }
 
 
@@ -106,6 +106,12 @@ void dc_motor_set_power(int8_t power) {
     }
 }
 
+
+/**
+* @brief Convert power percentage to duty cycle, applying a deadzone to ensure minimum power is delivered to overcome motor stiction.
+* @param power Power level as a percentage (-100 to 100)
+* @return Duty cycle value
+*/
 uint32_t _dc_motor_power_to_duty_cycle(int8_t power) {
 
     float scale_factor = (100.0 - MOTOR_MIN_ABS_POWER) / 100.0; // Scale factor to apply deadzone
@@ -115,6 +121,13 @@ uint32_t _dc_motor_power_to_duty_cycle(int8_t power) {
 
     return duty_cycle;
 }
+
+
+void dc_motor_control_task(void) {
+    dc_motor_set_power(global_rf_comms_data.rx_throttle);
+
+}
+#pragma endregion DC_Motor
 
 
 // Perform initialisation
@@ -128,7 +141,6 @@ int pico_led_init(void) {
 void pico_set_led(bool led_on) {
     // Ask the wifi "driver" to set the GPIO on or off
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_on);
-
 }
 
 #pragma region INA260_REGION
@@ -176,10 +188,12 @@ void hw_drivers_init(void) {
     hard_assert(rc == PICO_OK);
     servo_init();
     INA260_init(INA260_ADDR);
+    dc_motor_init();
 }
 
 void hw_drivers_task_005ms(void) {
     // 5ms periodic tasks
+    dc_motor_control_task();
 }
 
 void hw_drivers_task_010ms(void) {
@@ -192,4 +206,12 @@ void hw_drivers_task_100ms(void) {
     uint16_t voltage = INA260_readBusVoltage_mV();
     int16_t current = INA260_readCurrent_mA();
     //printf("INA260 Voltage: %u mV, Current: %d mA\n", voltage, current);
+}
+
+void hw_drivers_task_debug(void) {
+    // Debug task to print hardware status
+    uint16_t voltage = INA260_readBusVoltage_mV();
+    int16_t current = INA260_readCurrent_mA();
+    //printf("Debug Task: Battery Voltage = %u mV, Battery Current = %d mA\n", voltage, current);
+    //printf("Debug Task: Car Throttle = %d, Car Turn Angle = %d, Power Status = %d\n", global_controls_data.car_throttle, global_controls_data.car_turn_angle, global_controls_data.ccm_power_state);
 }

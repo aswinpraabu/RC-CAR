@@ -1,11 +1,14 @@
 #ifndef HW_DRIVERS_H
 #define HW_DRIVERS_H
 
+#include "stdlib.h"
 #include "pico/stdlib.h"
 #include "pin_config.h"
 #include "hardware/pwm.h"
 #include "ina260_sensor.h"
 #include "hardware/spi.h"
+
+#include "global_data.h"
 
 // Pico W devices use a GPIO on the WIFI chip for the LED,
 // so when building for Pico W, CYW43_WL_GPIO_LED_PIN will be defined
@@ -39,19 +42,10 @@ void servo_angle_to_duty_ns(int8_t angle);
 #define MOTOR_PWM_FREQ 1000 // Frequency for DC motor PWM in Hz
 #define MOTOR_MIN_ABS_POWER 20 // Minimum power level to overcome motor deadzone (in percentage)
 
-/**
- * @brief drive the motor based on power percentage
- * @param power Power level as a percentage (-100 to 100)
- * Positive power values correspond to forward motion, negative values correspond to reverse motion.
- */
 void dc_motor_init(void);
-
-/**
-* @brief Convert power percentage to duty cycle, applying a deadzone to ensure minimum power is delivered to overcome motor stiction.
-* @param power Power level as a percentage (-100 to 100)
-* @return Duty cycle value
-*/
 void dc_motor_set_power(int8_t power);
+uint32_t _dc_motor_power_to_duty_cycle(int8_t power);
+void dc_motor_control_task(void);
 
 #pragma endregion DC_Motor_Definitions
 
@@ -67,9 +61,10 @@ void pico_set_led(bool led_on);
 
 
 void hw_drivers_init(void);
-void hw_drivers_task_005ms(void);
 void hw_drivers_task_010ms(void);
+void hw_drivers_task_005ms(void);
 void hw_drivers_task_100ms(void);
+void hw_drivers_task_debug(void);
 
 uint16_t read_battery_voltage_mv(void);
 uint16_t read_battery_current_ma(void);
