@@ -18,6 +18,7 @@ void servo_init(void) {
 }
 
 void servo_set_angle(int8_t angle) {
+    // Constrain angle to valid range
     if (angle < SERVO_MIN_ANGLE) angle = SERVO_MIN_ANGLE;
     if (angle > SERVO_MAX_ANGLE) angle = SERVO_MAX_ANGLE;
 
@@ -29,6 +30,52 @@ void servo_set_angle(int8_t angle) {
     //printf("Servo angle set to %d degrees (duty cycle: %u, duty_ms: %f)\n", angle, duty_cycle, duty_ms);
 }
 
+void dc_motor_init(void) {
+    // Initialize GPIO for DC motor control
+    uint8_t motor_fwd_pin_channel = pwm_gpio_to_channel(MOTOR_FWD_PIN);
+    uint8_t motor_rev_pin_channel = pwm_gpio_to_channel(MOTOR_REV_PIN);
+
+    gpio_set_function(MOTOR_FWD_PIN, GPIO_FUNC_PWM);
+    gpio_set_function(MOTOR_REV_PIN, GPIO_FUNC_PWM);
+
+    pwm_set_clkdiv(motor_fwd_pin_channel, SYS_CLK_HZ / MOTOR_PWM_CLK_HZ);
+    pwm_set_clkdiv(motor_rev_pin_channel, SYS_CLK_HZ / MOTOR_PWM_CLK_HZ);
+
+    pwm_set_wrap(motor_fwd_pin_channel, MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ - 1); // Set wrap value based on frequency
+    pwm_set_wrap(motor_rev_pin_channel, MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ - 1); // Set wrap value based on frequency
+
+    dc_motor_set_power(0); // Set to neutral position
+    
+    pwm_set_enabled(motor_fwd_pin_channel, true);
+    pwm_set_enabled(motor_rev_pin_channel, true);
+}
+
+void dc_motor_set_power(int8_t power) {
+    // Constrain power to valid range
+    if (power < -100) power = -100;
+    if (power > 100) power = 100;
+
+    if (power > 0) {
+        pwm_set_gpio_level(MOTOR_FWD_PIN, _dc_motor_power_to_duty_cycle(power));
+        pwm_set_gpio_level(MOTOR_REV_PIN, 0);
+    } else if (power < 0) {
+        pwm_set_gpio_level(MOTOR_FWD_PIN, 0);
+        pwm_set_gpio_level(MOTOR_REV_PIN, _dc_motor_power_to_duty_cycle(power));
+    } else {
+        pwm_set_gpio_level(MOTOR_FWD_PIN, 0);
+        pwm_set_gpio_level(MOTOR_REV_PIN, 0);
+    }
+}
+
+uint32_t _dc_motor_power_to_duty_cycle(int8_t power) {
+
+    float scale_factor = (100.0 - MOTOR_MIN_ABS_POWER) / 100.0; // Scale factor to apply deadzone
+    float scaled_power = abs(power)*scale_factor + MOTOR_MIN_ABS_POWER; // Apply deadzone
+
+    uint32_t duty_cycle = (uint32_t)((scaled_power / 100.0) * (MOTOR_PWM_CLK_HZ / MOTOR_PWM_FREQ)); // Convert percentage to clock cycles
+
+    return duty_cycle;
+}
 
 
 // Perform initialisation

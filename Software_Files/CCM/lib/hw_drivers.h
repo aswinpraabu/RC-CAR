@@ -33,6 +33,29 @@ void servo_angle_to_duty_ns(int8_t angle);
 
 #pragma endregion Servo_Definitions
 
+#pragma region DC_Motor_Definitions
+
+#define MOTOR_PWM_CLK_HZ 1000000 // PWM clock frequency in Hz
+#define MOTOR_PWM_FREQ 1000 // Frequency for DC motor PWM in Hz
+#define MOTOR_MIN_ABS_POWER 20 // Minimum power level to overcome motor deadzone (in percentage)
+
+/**
+ * @brief drive the motor based on power percentage
+ * @param power Power level as a percentage (-100 to 100)
+ * Positive power values correspond to forward motion, negative values correspond to reverse motion.
+ */
+void dc_motor_init(void);
+
+/**
+* @brief Convert power percentage to duty cycle, applying a deadzone to ensure minimum power is delivered to overcome motor stiction.
+* @param power Power level as a percentage (-100 to 100)
+* @return Duty cycle value
+*/
+void dc_motor_set_power(int8_t power);
+
+#pragma endregion DC_Motor_Definitions
+
+
 
 #define INA260_ADDR 0x40
 void INA260_init(uint8_t i2caddr);
