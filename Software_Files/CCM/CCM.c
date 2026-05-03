@@ -10,7 +10,6 @@
 #include "rf_comms.h"
 
 
-
 void initialize_system(void) {
     stdio_init_all();
     hw_drivers_init();
@@ -65,22 +64,8 @@ int main() {
             rf_comms_task_debug(); // Call debug task to print received data every 3 seconds
 
 
-            //servo_set_angle(90 * (led_state ? 1 : -1));
-            
+            printf("Debug Task: Turn Angle = %d, Throttle = %d\n", global_rf_comms_data.rx_turn_angle, global_rf_comms_data.rx_throttle);
             debug_task_time = get_absolute_time();
-
-            //rf_comms_init(); // Re-initialize RF communications every 2 seconds for testing
-            //uint32_t temp = 0;//RFM69_readTemperature(1); // Read frequency for testing
-            //RFM69_setNetwork(0x1234); // Set network ID for testing
-            //uint32_t frequency = RFM69_readReg(0x2F); // Read frequency for testing
-            //RFM69_readReg(0x30); // Read frequency for testing
-            //RFM69_readReg(0x14); // Read frequency for testing
-            //RFM69_readReg(0x15); // Read frequency for testing
-
-            //RFM69_readRSSI(0); // Read frequency for testing
-            //RFM69_writeReg(0x24, 0x12); // Write frequency for testing
-            //RFM69_readReg(0x01); // Read frequency for testing
-            //printf("Temperature: %d C, Frequency: %X Hz\n", temp, frequency);
         }
     }
 }
