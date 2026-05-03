@@ -20,10 +20,12 @@ void initialize_system(void) {
 
 void task_005ms(void) {
     rf_comms_task_005ms();
+    hw_drivers_task_005ms();
     controls_task_005ms();
     
 }
 void task_010ms(void) {
+    hw_drivers_task_010ms();
     controls_task_010ms();
     
 }
@@ -66,9 +68,10 @@ int main() {
             led_state = !led_state;
 
             rf_comms_task_debug(); // Call debug task to print received data every 3 seconds
+            hw_drivers_task_debug(); // Call debug task to print hardware status every 3 seconds
 
-
-            printf("Debug Task: Turn Angle = %d, Throttle = %d\n", global_rf_comms_data.rx_turn_angle, global_rf_comms_data.rx_throttle);
+            //printf("Debug Task: Turn Angle = %d, Throttle = %d\n", global_rf_comms_data.rx_turn_angle, global_rf_comms_data.rx_throttle);
+            //printf("Debug Task: Car Throttle = %d, Car Turn Angle = %d, Power Status = %d\n", global_controls_data.car_throttle, global_controls_data.car_turn_angle, global_controls_data.ccm_power_state);
             debug_task_time = get_absolute_time();
         }
     }
