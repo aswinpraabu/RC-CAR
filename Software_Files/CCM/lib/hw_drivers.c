@@ -194,7 +194,7 @@ void hw_drivers_init(void) {
 
 void hw_drivers_task_005ms(void) {
     // 5ms periodic tasks
-    dc_motor_control_task();
+    motor_control_task();
 }
 
 void hw_drivers_task_010ms(void) {
