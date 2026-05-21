@@ -123,8 +123,9 @@ uint32_t _dc_motor_power_to_duty_cycle(int8_t power) {
 }
 
 
-void dc_motor_control_task(void) {
-    dc_motor_set_power(global_rf_comms_data.rx_throttle);
+void motor_control_task(void) {
+    dc_motor_set_power(global_controls_data.car_throttle);
+    servo_set_angle(global_controls_data.car_turn_angle);
 
 }
 #pragma endregion DC_Motor

@@ -45,7 +45,7 @@ void servo_angle_to_duty_ns(int8_t angle);
 void dc_motor_init(void);
 void dc_motor_set_power(int8_t power);
 uint32_t _dc_motor_power_to_duty_cycle(int8_t power);
-void dc_motor_control_task(void);
+void motor_control_task(void);
 
 #pragma endregion DC_Motor_Definitions
 
