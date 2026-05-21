@@ -183,13 +183,21 @@ void INA260_init(uint8_t i2caddr) {
 }
 #pragma endregion INA260_REGION
 
+void gpio_inits(){
+    gpio_init(POWER_ON_PIN_NUM);
+    gpio_set_dir(POWER_ON_PIN_NUM,GPIO_OUT);
+    gpio_put(POWER_ON_PIN_NUM,true);
+
+}
 
 void hw_drivers_init(void) {
+    gpio_inits();
     int rc = pico_led_init();
     hard_assert(rc == PICO_OK);
     servo_init();
     INA260_init(INA260_ADDR);
     dc_motor_init();
+
 }
 
 void hw_drivers_task_005ms(void) {
