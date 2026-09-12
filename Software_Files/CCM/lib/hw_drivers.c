@@ -1,6 +1,6 @@
 #include "hw_drivers.h"
 
-
+#pragma region SERVO_REGION
 /**
  * @brief Initialize the servo motor by configuring the PWM hardware and setting the initial position.
  * @note
@@ -56,6 +56,7 @@ void servo_set_angle(int8_t angle) {
     pwm_set_gpio_level(SERVO_PIN, duty_cycle);
     //printf("Servo angle set to %d degrees (duty cycle: %u, duty_ms: %f)\n", angle, duty_cycle, duty_ms);
 }
+#pragma endregion SERVO_REGION
 
 #pragma region DC_Motor
 
